@@ -1,8 +1,8 @@
-// app/course/[code]/page.js
+// app/components/coursePage.js
 "use client";
 
 import { useState, useMemo, useEffect, useRef } from "react";
-import { useApp } from "../../context/AppContext";
+import { useApp } from "../context/AppContext";
 
 // Course data - in production, this would come from your Strapi backend
 const ALL_COURSES = {

@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { useApp } from "./context/AppContext";
-import CourseResourcePage from "./course/[code]/page";
+import CourseResourcePage from "./components/coursePage";
 
 const BRAND = {
   light: {

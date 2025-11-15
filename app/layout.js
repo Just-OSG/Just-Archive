@@ -1,6 +1,5 @@
 import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "./components/Navbar";
 import { AppProvider } from "./context/AppContext";
 
 const ibmPlexSans = IBM_Plex_Sans({
@@ -46,7 +45,6 @@ export default function RootLayout({ children }) {
         className={`${ibmPlexSans.variable} ${ibmPlexMono.variable} antialiased`}
       >
         <AppProvider>
-          <Navbar />
           {children}
         </AppProvider>
       </body>

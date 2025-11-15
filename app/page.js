@@ -4,6 +4,7 @@
 import { useState, useEffect } from "react";
 import { useApp } from "./context/AppContext";
 import CourseResourcePage from "./components/coursePage";
+import Navbar from "./components/Navbar";
 
 const BRAND = {
   light: {
@@ -231,7 +232,7 @@ const TEXTS = {
     allCourses: "All Available Courses",
     noCourses: "No courses added yet for this major.",
     viewResources: "View resources →",
-    langToggle: "العربية",
+    langToggle: "Arabic",
     themeToggleLight: "Light",
     themeToggleDark: "Dark",
     showAllCourses: "Show All Courses",
@@ -257,9 +258,10 @@ const TEXTS = {
 };
 
 export default function HomePage() {
-  const { lang, theme, isRTL, isDark } = useApp();
+  const { lang, setLang, theme, setTheme, isRTL, isDark } = useApp();
   const [selectedMajorCode, setSelectedMajorCode] = useState(null); // null means "show all"
   const [currentHash, setCurrentHash] = useState('');
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   
   // Always start with default order to avoid hydration mismatch
   const [faculties, setFaculties] = useState(FACULTIES);
@@ -285,8 +287,14 @@ export default function HomePage() {
         const existingIds = new Set(orderIds);
         const newFaculties = FACULTIES.filter(f => !existingIds.has(f.id));
         
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        setFaculties([...ordered, ...newFaculties]);
+        const newOrder = [...ordered, ...newFaculties];
+        // Only update if different to avoid cascading renders
+        setFaculties(prev => {
+          if (JSON.stringify(prev.map(f => f.id)) !== JSON.stringify(newOrder.map(f => f.id))) {
+            return newOrder;
+          }
+          return prev;
+        });
       } catch (e) {
         console.error("Failed to load faculty order", e);
       }
@@ -339,9 +347,167 @@ export default function HomePage() {
         }))
       );
 
-  // If we're on a course page (hash starts with "course/"), show the course page
+  // If we're on a course page (hash starts with "course/"), show the course page with mobile menu
   if (currentHash.startsWith('course/')) {
-    return <CourseResourcePage />;
+    return (
+      <div
+        className={
+          "min-h-screen " +
+          (isDark ? "bg-slate-900 text-slate-100" : "bg-slate-50 text-slate-900") +
+          (isRTL ? " rtl" : "")
+        }
+        dir={isRTL ? "rtl" : "ltr"}
+      >
+        <Navbar onToggleMobileMenu={() => setShowMobileMenu(!showMobileMenu)} showMobileMenu={showMobileMenu} />
+        
+        {/* Mobile overlay */}
+        {showMobileMenu && (
+          <div
+            className="fixed inset-0 z-65 bg-black/50 md:hidden"
+            onClick={() => setShowMobileMenu(false)}
+          />
+        )}
+        
+        {/* Majors sidebar for mobile */}
+        <aside className={
+          "w-80 shrink-0 md:hidden fixed inset-y-0 z-70 transform transition-transform duration-300 " +
+          (isRTL ? "right-0 " : "left-0 ") +
+          (showMobileMenu ? "translate-x-0" : (isRTL ? "translate-x-full" : "-translate-x-full"))
+        }>
+          <div
+            className={
+              (isDark
+                ? "bg-slate-900 border-slate-800 shadow-sm"
+                : "bg-white border-slate-200 shadow-sm") +
+              " border flex flex-col h-full"
+            }
+          >
+            {/* Header with close button */}
+            <div className={(isDark ? "border-slate-800" : "border-slate-200") + " border-b px-5 py-4 flex items-start justify-between"}>
+              <div className="flex-1">
+                <h2
+                  className={
+                    (isDark ? "text-slate-100" : "text-slate-900") +
+                    " text-sm font-semibold"
+                  }
+                >
+                  {t.majorsTitle}
+                </h2>
+                <p className={(isDark ? "text-slate-500" : "text-slate-400") + " mt-0.5 text-xs"}>
+                  {t.majorsSubtitle}
+                </p>
+              </div>
+              
+              {/* Close button - Mobile only */}
+              <button
+                onClick={() => setShowMobileMenu(false)}
+                className={(isDark ? "text-slate-400 hover:text-slate-100" : "text-slate-400 hover:text-slate-900") + " transition-colors"}
+                aria-label="Close menu"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto py-2">
+              {/* Show All Courses Button */}
+              <div className="mb-4">
+                <button
+                  onClick={() => {
+                    setSelectedMajorCode(null);
+                    setShowMobileMenu(false);
+                    window.location.hash = '';
+                  }}
+                  className={
+                    "flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition " +
+                    (isDark
+                      ? "text-slate-400 hover:bg-slate-800/50"
+                      : "text-slate-500 hover:bg-slate-50")
+                  }
+                >
+                  <span className="font-medium">{t.showAllCourses}</span>
+                </button>
+              </div>
+
+              {faculties.map((faculty) => (
+                <div key={faculty.id} className="mb-3">
+                  <div
+                    className={
+                      (isDark
+                        ? "text-[#7DB4E5] bg-[#7DB4E5]/3"
+                        : "text-[#145C9E] bg-slate-100") +
+                      " flex items-center justify-between px-4 py-2"
+                    }
+                  >
+                    <button
+                      onClick={() => toggleFaculty(faculty.id)}
+                      className="flex-1 text-left text-xs font-bold uppercase tracking-wider"
+                    >
+                      {lang === "en" ? faculty.nameEn : faculty.nameAr}
+                    </button>
+                  </div>
+                  {!collapsedFaculties.has(faculty.id) && (
+                    <ul>
+                      {faculty.majors.map((major) => (
+                        <li key={major.id}>
+                          <button
+                            onClick={() => {
+                              setSelectedMajorCode(major.code);
+                              setShowMobileMenu(false);
+                              window.location.hash = '';
+                            }}
+                            className={
+                              "flex w-full items-center justify-between px-4 py-2 text-left text-sm transition " +
+                              (isDark
+                                ? "text-slate-400 hover:bg-slate-800/50"
+                                : "text-slate-500 hover:bg-slate-50")
+                            }
+                          >
+                            <span>{lang === "en" ? major.nameEn : major.nameAr}</span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </div>
+            
+            {/* Mobile Settings Footer - Static text links */}
+            <div className={(isDark ? "border-slate-800 bg-slate-900" : "border-slate-200 bg-white") + " border-t px-5 py-4"}>
+              <div className="flex items-center justify-between text-sm">
+                <button
+                  onClick={() => setLang(lang === "en" ? "ar" : "en")}
+                  className={(isDark ? "text-slate-400 hover:text-slate-100" : "text-slate-500 hover:text-slate-900") + " transition-colors font-medium"}
+                >
+                  {t.langToggle}
+                </button>
+                
+                <div className={(isDark ? "text-slate-700" : "text-slate-300") + " text-xs"}>/</div>
+                
+                <button
+                  onClick={() => setTheme(isDark ? "light" : "dark")}
+                  className={(isDark ? "text-slate-400 hover:text-slate-100" : "text-slate-500 hover:text-slate-900") + " transition-colors font-medium flex items-center gap-1.5"}
+                >
+                  {isDark ? (
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                  ) : (
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                  )}
+                  {isDark ? t.themeToggleLight : t.themeToggleDark}
+                </button>
+              </div>
+            </div>
+          </div>
+        </aside>
+        
+        <CourseResourcePage />
+      </div>
+    );
   }
 
   return (
@@ -353,37 +519,67 @@ export default function HomePage() {
       }
       dir={isRTL ? "rtl" : "ltr"}
     >
+      <Navbar onToggleMobileMenu={() => setShowMobileMenu(!showMobileMenu)} showMobileMenu={showMobileMenu} />
       {/* Main Shell */}
-      <div className="mx-auto flex max-w-[1400px] gap-10 px-4 py-6 min-h-screen">
+      <div className="mx-auto flex max-w-[1400px] gap-4 md:gap-10 px-5 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8 min-h-screen">
+        {/* Mobile overlay */}
+        {showMobileMenu && (
+          <div
+            className="fixed inset-0 z-65 bg-black/50 md:hidden"
+            onClick={() => setShowMobileMenu(false)}
+          />
+        )}
        
         {/* Majors sidebar */}
-        <aside className="hidden w-80 shrink-0 md:flex md:flex-col">
+        <aside className={
+          "w-80 shrink-0 md:flex md:flex-col fixed md:relative inset-y-0 z-70 md:z-40 transform transition-transform duration-300 " +
+          (isRTL ? "right-0 " : "left-0 ") +
+          (showMobileMenu ? "translate-x-0" : (isRTL ? "translate-x-full" : "-translate-x-full")) +
+          " md:translate-x-0"
+        }>
           <div
             className={
               (isDark
-                ? "bg-slate-900/30 border-slate-800 shadow-sm"
+                ? "bg-slate-900 md:bg-slate-900/30 border-slate-800 shadow-sm"
                 : "bg-white border-slate-200 shadow-sm") +
-              " rounded-xl border flex flex-col h-full"
+              " md:rounded-xl border flex flex-col h-full"
             }
           >
-            <div className={(isDark ? "border-slate-800" : "border-slate-200") + " border-b px-4 py-3"}>
-              <h2
-                className={
-                  (isDark ? "text-[#7DB4E5]" : "text-[#145C9E]") +
-                  " text-xs font-medium uppercase tracking-wide"
-                }
+            {/* Header with close button */}
+            <div className={(isDark ? "border-slate-800" : "border-slate-200") + " border-b px-5 py-4 flex items-start justify-between"}>
+              <div className="flex-1">
+                <h2
+                  className={
+                    (isDark ? "text-slate-100" : "text-slate-900") +
+                    " text-sm font-semibold"
+                  }
+                >
+                  {t.majorsTitle}
+                </h2>
+                <p className={(isDark ? "text-slate-500" : "text-slate-400") + " mt-0.5 text-xs"}>
+                  {t.majorsSubtitle}
+                </p>
+              </div>
+              
+              {/* Close button - Mobile only */}
+              <button
+                onClick={() => setShowMobileMenu(false)}
+                className={(isDark ? "text-slate-400 hover:text-slate-100" : "text-slate-400 hover:text-slate-900") + " transition-colors md:hidden"}
+                aria-label="Close menu"
               >
-                {t.majorsTitle}
-              </h2>
-              <p className={(isDark ? "text-slate-500" : "text-slate-400") + " mt-1 text-xs"}>
-                {t.majorsSubtitle}
-              </p>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
             <div className="flex-1 overflow-y-auto py-2">
               {/* Show All Courses Button */}
               <div className="mb-4">
                 <button
-                  onClick={() => setSelectedMajorCode(null)}
+                  onClick={() => {
+                    setSelectedMajorCode(null);
+                    setShowMobileMenu(false);
+                  }}
                   className={
                     "flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition " +
                     (selectedMajorCode === null
@@ -412,7 +608,7 @@ export default function HomePage() {
               </div>
 
               {faculties.map((faculty, index) => (
-                <div key={faculty.id} className="mb-2">
+                <div key={faculty.id} className="mb-3">
                   <div
                     className={
                       (isDark
@@ -455,7 +651,10 @@ export default function HomePage() {
                         return (
                           <li key={major.id}>
                             <button
-                              onClick={() => setSelectedMajorCode(major.code)}
+                              onClick={() => {
+                                setSelectedMajorCode(major.code);
+                                setShowMobileMenu(false);
+                              }}
                               className={
                                 "flex w-full items-center justify-between px-4 py-2 text-left text-sm transition " +
                                 (active
@@ -489,6 +688,36 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
+            
+            {/* Mobile Settings Footer - Static text links */}
+            <div className={(isDark ? "border-slate-800 bg-slate-900" : "border-slate-200 bg-white") + " md:hidden border-t px-5 py-4"}>
+              <div className="flex items-center justify-between text-sm">
+                <button
+                  onClick={() => setLang(lang === "en" ? "ar" : "en")}
+                  className={(isDark ? "text-slate-400 hover:text-slate-100" : "text-slate-500 hover:text-slate-900") + " transition-colors font-medium"}
+                >
+                  {t.langToggle}
+                </button>
+                
+                <div className={(isDark ? "text-slate-700" : "text-slate-300") + " text-xs"}>/</div>
+                
+                <button
+                  onClick={() => setTheme(isDark ? "light" : "dark")}
+                  className={(isDark ? "text-slate-400 hover:text-slate-100" : "text-slate-500 hover:text-slate-900") + " transition-colors font-medium flex items-center gap-1.5"}
+                >
+                  {isDark ? (
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                  ) : (
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                  )}
+                  {isDark ? t.themeToggleLight : t.themeToggleDark}
+                </button>
+              </div>
+            </div>
           </div>
         </aside>
 
@@ -496,11 +725,11 @@ export default function HomePage() {
         <main className="flex-1 space-y-6">
           {/* Courses list for selected major */}
           <section className="space-y-3">
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
               <h2
                 className={
                   (isDark ? "text-slate-100" : "text-slate-800") +
-                  " text-base font-semibold whitespace-nowrap"
+                  " text-base sm:text-lg font-semibold"
                 }
               >
                 {selectedMajor
@@ -508,22 +737,25 @@ export default function HomePage() {
                   : t.allCourses}
               </h2>
               
-              {/* Search Bar */}
-              <input
-                className={
-                  "flex-1 rounded-lg border px-4 py-2 text-sm outline-none transition " +
-                  (isDark
-                    ? "border-slate-800 bg-slate-900/40 text-slate-100 placeholder:text-slate-500 focus:border-[#7DB4E5]"
-                    : "border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus:border-[#145C9E] focus:bg-white")
-                }
-                placeholder={t.searchPlaceholder}
-              />
+              <div className="flex items-center gap-3 w-full sm:w-auto sm:flex-1">
+                {/* Search Bar */}
+                <input
+                  className={
+                    "flex-1 sm:flex-auto rounded-lg border px-3 sm:px-4 py-2 text-sm outline-none transition " +
+                    (isDark
+                      ? "border-slate-800 bg-slate-900/40 text-slate-100 placeholder:text-slate-500 focus:border-[#7DB4E5]"
+                      : "border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus:border-[#145C9E] focus:bg-white")
+                  }
+                  placeholder={t.searchPlaceholder}
+                />
 
-              <p className={(isDark ? "text-slate-500" : "text-slate-400") + " text-sm whitespace-nowrap"}>
-                {courses.length} {lang === "en" ? "courses" : "مساق"}
-              </p>
+                <p className={(isDark ? "text-slate-500" : "text-slate-400") + " text-sm whitespace-nowrap"}>
+                  {courses.length} {lang === "en" ? "courses" : "مساق"}
+                </p>
+              </div>
             </div>
-            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+
+            <div className="grid gap-3  [@media(max-width:990px)]:grid-cols-1 [@media(max-width:1212px)]:grid-cols-2 lg:grid-cols-3">
               {courses.map((course) => {
                 return (
                   <div
@@ -533,7 +765,7 @@ export default function HomePage() {
                       (isDark
                         ? "bg-slate-900/40 border-slate-800 hover:border-[#7DB4E5]/40 shadow-sm"
                         : "bg-white border-slate-200 hover:border-[#145C9E]/40 shadow-sm") +
-                      " rounded-lg border p-4 cursor-pointer transition hover:shadow-sm overflow-hidden"
+                      " rounded-lg border p-3 sm:p-4 cursor-pointer transition hover:shadow-sm overflow-hidden"
                     }
                   >
                     <p className={(isDark ? "text-slate-500" : "text-[#145C9E]") + " text-sm uppercase tracking-wide"}>

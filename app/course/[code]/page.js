@@ -1,8 +1,8 @@
-// app/components/coursePage.js
+// app/course/[code]/page.js
 "use client";
 
 import { useState, useMemo, useEffect, useRef } from "react";
-import { useApp } from "../context/AppContext";
+import { useApp } from "../../context/AppContext";
 
 // Course data - in production, this would come from your Strapi backend
 const ALL_COURSES = {
@@ -323,7 +323,7 @@ export default function CourseResourcePage() {
 
   return (
     <div className={isDark ? "min-h-screen bg-slate-900" : "min-h-screen bg-slate-50"}>
-      <main className="mx-auto max-w-[1350px] px-4 py-6 space-y-6">
+      <main className="mx-auto max-w-[1350px] px-5 py-6 space-y-6">
         {/* course header */}
         <section className={
           (isDark ? "bg-slate-900/30 border-slate-800" : "bg-white border-slate-200") +
@@ -358,12 +358,12 @@ export default function CourseResourcePage() {
               </p>
             )}
           </div>
-          <div className="hidden sm:flex gap-2 w-auto">
+          <div className="flex gap-2 w-full sm:w-auto">
             <button className={
               (isDark ? "bg-[#7DB4E5] text-slate-950 hover:bg-[#9CC5E9]" : "bg-[#145C9E] text-white hover:bg-[#1f3d78]") +
-              " rounded-md px-4 py-2 text-xs font-medium transition"
+              " rounded-md px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-xs font-medium transition w-full sm:w-auto"
             }>
-              Upload Resources
+              Upload resource
             </button>
           </div>
         </section>
@@ -424,7 +424,23 @@ export default function CourseResourcePage() {
           >
             Notes
           </button>
-
+          <button
+            onClick={() => {
+              setActiveTab("assignments");
+              setSelectedResourceId(assignmentResources[0]?.id || null);
+            }}
+            className={`px-3 py-2 text-sm ${
+              activeTab === "assignments"
+                ? isDark
+                  ? "border-b-2 border-[#7DB4E5] text-slate-100"
+                  : "border-b-2 border-[#145C9E] text-slate-900"
+                : isDark
+                ? "text-slate-400"
+                : "text-slate-500"
+            }`}
+          >
+            Assignments
+          </button>
           <button
             onClick={() => {
               setActiveTab("youtube");
@@ -446,7 +462,7 @@ export default function CourseResourcePage() {
 
         {/* Exam Filter - only show when on PYQ tab */}
         {activeTab === "pyq" && (
-          <div className="grid lg:gap-6 lg:grid-cols-[1.05fr_0.4fr]">
+          <div className="grid gap-6 lg:grid-cols-[1.05fr_0.4fr]">
             <div className={(isDark ? "bg-slate-900/40 border-slate-800" : "bg-white border-slate-200") + " rounded-lg border px-4 py-3"}>
               <div className="flex items-center gap-3 flex-wrap">
                 <span className={(isDark ? "text-slate-400" : "text-slate-600") + " text-xs font-medium"}>

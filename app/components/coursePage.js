@@ -323,7 +323,7 @@ export default function CourseResourcePage() {
 
   return (
     <div className={isDark ? "min-h-screen bg-slate-900" : "min-h-screen bg-slate-50"}>
-      <main className="mx-auto max-w-[1350px] px-4 py-6 space-y-6">
+      <main className="mb-10 mx-auto max-w-[1350px] px-4 py-6 space-y-6">
         {/* course header */}
         <section className={
           (isDark ? "bg-slate-900/30 border-slate-800" : "bg-white border-slate-200") +

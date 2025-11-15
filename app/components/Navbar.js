@@ -50,16 +50,15 @@ export default function Navbar({ onToggleMobileMenu, showMobileMenu = false }) {
           <button
             onClick={() => router.push("/")}
             className={
-              (isDark ? "bg-white" : "bg-white") +
-              " flex h-9 w-9 items-center justify-center rounded-md hover:opacity-90 transition overflow-hidden p-1"
+              " flex h-9 w-9 items-center justify-center hover:opacity-90 transition overflow-hidden"
             }
             aria-label="Go to home"
           >
             <Image 
               src="/logo.png" 
               alt="JUST BANK Logo" 
-              width={32} 
-              height={32}
+              width={34} 
+              height={34}
               className="object-contain"
             />
           </button>

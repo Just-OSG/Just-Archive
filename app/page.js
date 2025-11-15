@@ -480,7 +480,7 @@ export default function HomePage() {
     >
       <Navbar onToggleMobileMenu={() => setShowMobileMenu(!showMobileMenu)} showMobileMenu={showMobileMenu} />
       {/* Main Shell */}
-      <div className="mx-auto flex max-w-[1400px] gap-4 md:gap-10 px-5 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8 min-h-screen">
+      <div className=" mb-10 mx-auto flex max-w-[1400px] gap-4 md:gap-10 px-5 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8 min-h-screen">
         {/* Mobile overlay */}
         {showMobileMenu && (
           <div

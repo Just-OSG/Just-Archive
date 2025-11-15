@@ -1,5 +1,5 @@
 {
-  "appName": "بنك جست",
+  "appName": "أرشيف جست",
   "university": "جامعة العلوم والتكنولوجيا الأردنية",
   "searchPlaceholder": "ابحث عن مواد أو أسئلة سنوات ...",
   "majorsTitle": "التخصصات",
@@ -9,14 +9,14 @@
   "coursesIn": "المساقات في {{name}}",
   "allCourses": "جميع المساقات المتاحة",
   "noCourses": "لا يوجد مساقات مضافة لهذا التخصص حالياً.",
-  "viewResources": " عرض المحتوى ←",
-  "langToggle": "English",
+  "viewResources": "  عرض المحتوى   --> ",
+  "langToggle": "انجليزي",
   "themeToggleLight": "فاتح",
   "themeToggleDark": "داكن",
   "showAllCourses": "عرض جميع المساقات",
   "home": "الرئيسية",
   "courses": "المساقات",
-  "about": "عن البنك",
+  "about": "عن الأرشيف",
   "uploadResources": "رفع الملفات",
   "backToCourses": "العودة للمساقات",
   "selected": "محدد",
@@ -56,5 +56,10 @@
   "unknown": "غير معروف",
   "courseDoesntExist": "هذا المساق غير موجود في قاعدة البيانات بعد. سيتم إضافة الملفات قريباً.",
   "markAsComplete": "وضع علامة كمكتمل",
-  "markAsIncomplete": "وضع علامة كغير مكتمل"
+  "markAsIncomplete": "وضع علامة كغير مكتمل",
+  "aboutUs": "عن الأرشيف",
+  "submitPapers": "رفع الأوراق",
+  "termsOfUse": "شروط الاستخدام",
+  "privacyPolicy": "سياسة الخصوصية",
+  "copyright": "أرشيف جست ©"
 }

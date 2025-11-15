@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'Amman Sans';
+  src: url('/fonts/alfont_com_AlFont_com_AmmanV3Sans-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -25,10 +33,35 @@ body {
   font-family: var(--font-ibm-plex-sans), Arial, Helvetica, sans-serif;
 }
 
+/* Apply Arabic font and RTL when lang is set to Arabic */
+html[lang="ar"] {
+  direction: rtl;
+}
+
+html[lang="ar"] body,
+html[lang="ar"] body *,
+html[lang="ar"] button,
+html[lang="ar"] input,
+html[lang="ar"] textarea,
+html[lang="ar"] select {
+  font-family: 'Amman Sans', Arial, Helvetica, sans-serif !important;
+}
+
 button {
   cursor: pointer;
 }
 
 button:disabled {
   cursor: not-allowed;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }

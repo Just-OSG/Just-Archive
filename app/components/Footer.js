@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useApp } from "../context/AppContext";
+import { useTranslation } from "react-i18next";
 
 export default function Footer() {
   const { isDark } = useApp();
+  const { t } = useTranslation();
   
   return (
     <footer className={(isDark ? "bg-slate-900 border-slate-800" : "bg-white border-gray-200") + " border-t mt-auto"}>
@@ -12,14 +14,13 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-6">
           <div className="flex flex-col gap-3 flex-1">
             <div className={(isDark ? "text-gray-400" : "text-gray-600") + " flex flex-wrap gap-3 sm:gap-4 text-xs sm:text-sm"}>
-                            <Link href="#" className={(isDark ? "hover:text-gray-200" : "hover:text-gray-900") + " transition-colors"}>About Us</Link>
-
-              <Link href="#" className={(isDark ? "hover:text-gray-200" : "hover:text-gray-900") + " transition-colors"}>Submit Papers</Link>
-              <Link href="#" className={(isDark ? "hover:text-gray-200" : "hover:text-gray-900") + " transition-colors"}>Terms of Use</Link>
-              <Link href="#" className={(isDark ? "hover:text-gray-200" : "hover:text-gray-900") + " transition-colors"}>Privacy Policy</Link>
+              <Link href="#" className={(isDark ? "hover:text-gray-200" : "hover:text-gray-900") + " transition-colors"}>{t('aboutUs')}</Link>
+              <Link href="#" className={(isDark ? "hover:text-gray-200" : "hover:text-gray-900") + " transition-colors"}>{t('submitPapers')}</Link>
+              <Link href="#" className={(isDark ? "hover:text-gray-200" : "hover:text-gray-900") + " transition-colors"}>{t('termsOfUse')}</Link>
+              <Link href="#" className={(isDark ? "hover:text-gray-200" : "hover:text-gray-900") + " transition-colors"}>{t('privacyPolicy')}</Link>
             </div>
             <div className={(isDark ? "text-gray-500" : "text-gray-500") + " text-xs sm:text-sm"}>
-              Just Archive © {new Date().getFullYear()}
+              {t('copyright')} {new Date().getFullYear()}
             </div>
           </div>
           <a 

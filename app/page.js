@@ -400,7 +400,7 @@ export default function HomePage() {
                   >
                     <button
                       onClick={() => toggleFaculty(faculty.id)}
-                      className="flex-1 text-left text-xs font-bold uppercase tracking-wider"
+                      className={(isRTL ? "text-right" : "text-left") + " flex-1 text-xs font-bold uppercase tracking-wider"}
                     >
                       {lang === "en" ? faculty.nameEn : faculty.nameAr}
                     </button>
@@ -416,7 +416,7 @@ export default function HomePage() {
                               window.location.hash = '';
                             }}
                             className={
-                              "flex w-full items-center justify-between px-4 py-2 text-left text-sm transition " +
+                              "flex w-full items-center justify-between px-4 py-2 " + (isRTL ? "text-right" : "text-left") + " text-sm transition " +
                               (isDark
                                 ? "text-slate-400 hover:bg-slate-800/50"
                                 : "text-slate-500 hover:bg-slate-50")
@@ -578,7 +578,7 @@ export default function HomePage() {
                   >
                     <button
                       onClick={() => toggleFaculty(faculty.id)}
-                      className="flex-1 text-left text-xs font-bold uppercase tracking-wider"
+                      className={(isRTL ? "text-right" : "text-left") + " flex-1 text-xs font-bold uppercase tracking-wider"}
                     >
                       {lang === "en" ? faculty.nameEn : faculty.nameAr}
                     </button>
@@ -615,11 +615,11 @@ export default function HomePage() {
                                 setShowMobileMenu(false);
                               }}
                               className={
-                                "flex w-full items-center justify-between px-4 py-2 text-left text-sm transition " +
+                                "flex w-full items-center justify-between px-4 py-2 " + (isRTL ? "text-right" : "text-left") + " text-sm transition " +
                                 (active
                                   ? isDark
-                                    ? "bg-[#7DB4E5]/10 text-slate-100 border-l-2 border-[#7DB4E5]"
-                                    : "bg-[#145C9E]/10 text-slate-900 border-l-2 border-[#145C9E]"
+                                    ? "bg-[#7DB4E5]/10 text-slate-100 " + (isRTL ? "border-r-2" : "border-l-2") + " border-[#7DB4E5]"
+                                    : "bg-[#145C9E]/10 text-slate-900 " + (isRTL ? "border-r-2" : "border-l-2") + " border-[#145C9E]"
                                   : isDark
                                   ? "text-slate-400 hover:bg-slate-800/50"
                                   : "text-slate-500 hover:bg-slate-50")

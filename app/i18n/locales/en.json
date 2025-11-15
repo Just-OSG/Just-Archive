@@ -56,5 +56,10 @@
   "unknown": "Unknown",
   "courseDoesntExist": "This course doesn't exist in our database yet. Resources will be added soon.",
   "markAsComplete": "Mark as complete",
-  "markAsIncomplete": "Mark as incomplete"
+  "markAsIncomplete": "Mark as incomplete",
+  "aboutUs": "About Us",
+  "submitPapers": "Submit Papers",
+  "termsOfUse": "Terms of Use",
+  "privacyPolicy": "Privacy Policy",
+  "copyright": "Just Archive ©"
 }

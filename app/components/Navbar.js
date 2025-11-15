@@ -17,15 +17,24 @@ export default function Navbar({ onToggleMobileMenu, showMobileMenu = false }) {
     <header
       className={
         (isDark ? "bg-slate-900 border-slate-800 shadow-sm" : "bg-white/70 border-slate-200 ") +
-        " border-b sticky top-0 z-[60] backdrop-blur-md"
+        " border-b sticky top-0 z-[60] backdrop-blur-md cursor-pointer"
       }
       dir={isRTL ? "rtl" : "ltr"}
+      onClick={(e) => {
+        // Only navigate if clicking on the header background, not on buttons
+        if (e.target === e.currentTarget || e.target.closest('.header-container') === e.currentTarget.firstChild) {
+          router.push("/");
+        }
+      }}
     >
-      <div className="mx-auto flex max-w-[1350px] items-center lg:justify-between px-4 py-3 gap-3">
+      <div className="mx-auto flex max-w-[1350px] items-center lg:justify-between px-4 py-3 gap-3 header-container">
         
         {/* Mobile Menu Button */}
         <button
-          onClick={() => onToggleMobileMenu?.()}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleMobileMenu?.();
+          }}
           className={
             (isDark
               ? "border-slate-800 text-slate-300"
@@ -48,28 +57,34 @@ export default function Navbar({ onToggleMobileMenu, showMobileMenu = false }) {
         {/* Logo & Brand */}
         <div className="flex items-center gap-2">
           <button
-            onClick={() => router.push("/")}
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push("/");
+            }}
             className={
-              " flex h-9 w-9 items-center justify-center hover:opacity-90 transition overflow-hidden"
+              " flex h-9 w-9 items-center justify-center hover:opacity-90 transition overflow-visible"
             }
             aria-label="Go to home"
           >
             <Image 
               src="/logo.png" 
-              alt="JUST BANK Logo" 
-              width={34} 
-              height={34}
+              alt="JUST ARCHIVE Logo" 
+              width={48} 
+              height={48}
               className="object-contain"
             />
           </button>
           <button
-            onClick={() => router.push("/")}
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push("/");
+            }}
             className={isRTL ? "text-right" : "text-left"}
           >
             <p className={(isDark ? "text-slate-100" : "text-slate-900") + " text-base font-semibold leading-tight"}>
               {t('appName')}
             </p>
-            <p className={"text-sm leading-tight " + (isDark ? "text-slate-400" : "text-slate-500")}>
+            <p className={"lg:text-sm text-xs leading-tight " + (isDark ? "text-slate-400" : "text-slate-500")}>
               {t('university')}
             </p>
           </button>
@@ -79,7 +94,10 @@ export default function Navbar({ onToggleMobileMenu, showMobileMenu = false }) {
         <div className="hidden md:flex items-center gap-3">
           {/* Language Toggle */}
           <button
-            onClick={() => setLang(lang === "en" ? "ar" : "en")}
+            onClick={(e) => {
+              e.stopPropagation();
+              setLang(lang === "en" ? "ar" : "en");
+            }}
             className={
               (isDark
                 ? "border-slate-800 hover:bg-slate-800/50 text-slate-300"
@@ -92,7 +110,10 @@ export default function Navbar({ onToggleMobileMenu, showMobileMenu = false }) {
 
           {/* Theme Toggle */}
           <button
-            onClick={() => setTheme(isDark ? "light" : "dark")}
+            onClick={(e) => {
+              e.stopPropagation();
+              setTheme(isDark ? "light" : "dark");
+            }}
             className={
               (isDark
                 ? "border-slate-800 hover:bg-slate-800/50 text-slate-300"

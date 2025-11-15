@@ -32,6 +32,9 @@ export function AppProvider({ children }) {
     if (!mounted) return;
     localStorage.setItem("lang", lang);
     i18n.changeLanguage(lang);
+    
+    // Update HTML lang attribute for CSS font switching
+    document.documentElement.setAttribute('lang', lang);
   }, [lang, mounted, i18n]);
 
   useEffect(() => {

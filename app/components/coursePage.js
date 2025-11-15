@@ -130,6 +130,7 @@ export default function CourseResourcePage() {
   // Load completed files from localStorage - always start with empty object to avoid hydration mismatch
   const [completedFiles, setCompletedFiles] = useState({});
   const mountedRef = useRef(false);
+  const tabsRef = useRef(null);
 
   // Load from localStorage after mount
   useEffect(() => {
@@ -372,77 +373,83 @@ export default function CourseResourcePage() {
         {courseExists ? (
           <>
             {/* tabs */}
-            <div className={(isDark ? "border-slate-700" : "border-slate-200") + " flex gap-2 border-b"}>
-          <button
-            onClick={() => {
-              setActiveTab("syllabus");
-              setSelectedResourceId(null);
-            }}
-            className={`px-3 py-2 text-sm ${
-              activeTab === "syllabus"
-                ? isDark
-                  ? "border-b-2 border-[#7DB4E5] text-slate-100"
-                  : "border-b-2 border-[#145C9E] text-slate-900"
-                : isDark
-                ? "text-slate-400"
-                : "text-slate-500"
-            }`}
-          >
-            Syllabus
-          </button>
-          <button
-            onClick={() => {
-              setActiveTab("pyq");
-              setSelectedResourceId(pyqSections[0]?.items[0]?.id ?? null);
-            }}
-            className={`px-3 py-2 text-sm ${
-              activeTab === "pyq"
-                ? isDark
-                  ? "border-b-2 border-[#7DB4E5] text-slate-100"
-                  : "border-b-2 border-[#145C9E] text-slate-900"
-                : isDark
-                ? "text-slate-400"
-                : "text-slate-500"
-            }`}
-          >
-            PYQs
-          </button>
-          <button
-            onClick={() => {
-              setActiveTab("notes");
-              setSelectedResourceId(noteResources[0]?.id || null);
-            }}
-            className={`px-3 py-2 text-sm ${
-              activeTab === "notes"
-                ? isDark
-                  ? "border-b-2 border-[#7DB4E5] text-slate-100"
-                  : "border-b-2 border-[#145C9E] text-slate-900"
-                : isDark
-                ? "text-slate-400"
-                : "text-slate-500"
-            }`}
-          >
-            Notes
-          </button>
+            <div className={(isDark ? "border-slate-700" : "border-slate-200") + " border-b overflow-x-auto scrollbar-hide"}>
+              <div 
+                ref={tabsRef}
+                className="flex gap-2 min-w-max"
+                style={{ scrollBehavior: 'smooth' }}
+              >
+                <button
+                  onClick={() => {
+                    setActiveTab("syllabus");
+                    setSelectedResourceId(null);
+                  }}
+                  className={`px-3 py-2 text-sm whitespace-nowrap ${
+                    activeTab === "syllabus"
+                      ? isDark
+                        ? "border-b-2 border-[#7DB4E5] text-slate-100"
+                        : "border-b-2 border-[#145C9E] text-slate-900"
+                      : isDark
+                      ? "text-slate-400"
+                      : "text-slate-500"
+                  }`}
+                >
+                  Syllabus
+                </button>
+                <button
+                  onClick={() => {
+                    setActiveTab("pyq");
+                    setSelectedResourceId(pyqSections[0]?.items[0]?.id ?? null);
+                  }}
+                  className={`px-3 py-2 text-sm whitespace-nowrap ${
+                    activeTab === "pyq"
+                      ? isDark
+                        ? "border-b-2 border-[#7DB4E5] text-slate-100"
+                        : "border-b-2 border-[#145C9E] text-slate-900"
+                      : isDark
+                      ? "text-slate-400"
+                      : "text-slate-500"
+                  }`}
+                >
+                  PYQs
+                </button>
+                <button
+                  onClick={() => {
+                    setActiveTab("notes");
+                    setSelectedResourceId(noteResources[0]?.id || null);
+                  }}
+                  className={`px-3 py-2 text-sm whitespace-nowrap ${
+                    activeTab === "notes"
+                      ? isDark
+                        ? "border-b-2 border-[#7DB4E5] text-slate-100"
+                        : "border-b-2 border-[#145C9E] text-slate-900"
+                      : isDark
+                      ? "text-slate-400"
+                      : "text-slate-500"
+                  }`}
+                >
+                  Notes
+                </button>
 
-          <button
-            onClick={() => {
-              setActiveTab("youtube");
-              setSelectedResourceId(null);
-            }}
-            className={`px-3 py-2 text-sm ${
-              activeTab === "youtube"
-                ? isDark
-                  ? "border-b-2 border-[#7DB4E5] text-slate-100"
-                  : "border-b-2 border-[#145C9E] text-slate-900"
-                : isDark
-                ? "text-slate-400"
-                : "text-slate-500"
-            }`}
-          >
-            YouTube Playlists
-          </button>
-        </div>
+                <button
+                  onClick={() => {
+                    setActiveTab("youtube");
+                    setSelectedResourceId(null);
+                  }}
+                  className={`px-3 py-2 text-sm whitespace-nowrap ${
+                    activeTab === "youtube"
+                      ? isDark
+                        ? "border-b-2 border-[#7DB4E5] text-slate-100"
+                        : "border-b-2 border-[#145C9E] text-slate-900"
+                      : isDark
+                      ? "text-slate-400"
+                      : "text-slate-500"
+                  }`}
+                >
+                  YouTube Playlists
+                </button>
+              </div>
+            </div>
 
         {/* Exam Filter - only show when on PYQ tab */}
         {activeTab === "pyq" && (

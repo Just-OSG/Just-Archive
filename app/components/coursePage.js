@@ -127,6 +127,7 @@ export default function CourseResourcePage() {
   
   // Get course code from URL hash
   const [courseCode, setCourseCode] = useState("");
+  const [isFavorite, setIsFavorite] = useState(false);
   
   useEffect(() => {
     const getCodeFromHash = () => {
@@ -181,6 +182,18 @@ export default function CourseResourcePage() {
         console.error("Failed to parse completed files from localStorage", e);
       }
     }
+    
+    // Check if this course is in favorites
+    const favoritesStored = localStorage.getItem('favoriteCourses');
+    if (favoritesStored) {
+      try {
+        const favorites = JSON.parse(favoritesStored);
+        setIsFavorite(favorites.some(fav => fav.code === courseCode));
+      } catch (e) {
+        console.error("Failed to parse favorites from localStorage", e);
+      }
+    }
+    
     mountedRef.current = true;
   }, [courseCode]);
 
@@ -197,6 +210,40 @@ export default function CourseResourcePage() {
       ...prev,
       [fileId]: !prev[fileId],
     }));
+  };
+
+  // Toggle favorite status
+  const toggleFavorite = () => {
+    const favoritesStored = localStorage.getItem('favoriteCourses');
+    let favorites = [];
+    
+    if (favoritesStored) {
+      try {
+        favorites = JSON.parse(favoritesStored);
+      } catch (e) {
+        console.error("Failed to parse favorites from localStorage", e);
+      }
+    }
+    
+    const courseData = {
+      code: courseCode,
+      nameEn: course.nameEn,
+      nameAr: course.nameAr,
+      majorEn: course.majorEn,
+      majorAr: course.majorAr,
+    };
+    
+    if (isFavorite) {
+      // Remove from favorites
+      favorites = favorites.filter(fav => fav.code !== courseCode);
+      setIsFavorite(false);
+    } else {
+      // Add to favorites
+      favorites.push(courseData);
+      setIsFavorite(true);
+    }
+    
+    localStorage.setItem('favoriteCourses', JSON.stringify(favorites));
   };
 
   // PYQs grouped by exam term in your order
@@ -363,8 +410,8 @@ export default function CourseResourcePage() {
       <main className="mb-10 mx-auto max-w-[1350px] px-4 py-6 space-y-6">
         {/* course header */}
         <section className={
-          (isDark ? "bg-slate-900/30 border-slate-800" : "bg-white border-slate-200") +
-          " rounded-lg px-4 sm:px-6 py-4 sm:py-5 shadow-sm border flex flex-col sm:flex-row items-start justify-between gap-3 sm:gap-4"
+          (isDark ? "bg-slate-900/30 border-slate-700" : "bg-white border-slate-200") +
+          " rounded-lg px-4 sm:px-6 py-4 sm:py-5 border flex flex-col sm:flex-row items-start justify-between gap-3 sm:gap-4"
         }>
           <div className="flex-1 w-full sm:w-auto">
             <button
@@ -396,6 +443,25 @@ export default function CourseResourcePage() {
             )}
           </div>
           <div className="hidden sm:flex gap-2 w-auto">
+            <button 
+              onClick={toggleFavorite}
+              className={
+                (isDark
+                  ? "border-slate-700 hover:bg-slate-800/50 text-slate-300"
+                  : "border-slate-200 hover:bg-slate-50 text-slate-700") +
+                " rounded-md px-3 py-2 text-sm font-medium flex items-center gap-1.5 transition border"
+              }
+              aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            >
+              <svg 
+                className="w-4.5 h-4.5" 
+                fill={isFavorite ? "currentColor" : "none"} 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            </button>
             <button className={
               (isDark ? "bg-[#7DB4E5] text-slate-950 hover:bg-[#9CC5E9]" : "bg-[#145C9E] text-white hover:bg-[#1f3d78]") +
               " rounded-md px-4 py-2 text-xs font-medium transition"
@@ -490,7 +556,7 @@ export default function CourseResourcePage() {
         {/* Exam Filter - only show when on PYQ tab */}
         {activeTab === "pyq" && (
           <div className="grid lg:gap-6 lg:grid-cols-[1.05fr_0.4fr]">
-            <div className={(isDark ? "bg-slate-900/40 border-slate-800" : "bg-white border-slate-200") + " rounded-lg border px-4 py-3"}>
+            <div className={(isDark ? "bg-slate-900/40 border-slate-700" : "bg-white border-slate-200") + " rounded-lg border px-4 py-3"}>
               <div className="flex items-center gap-3 flex-wrap">
                 <span className={(isDark ? "text-slate-400" : "text-slate-600") + " text-xs font-medium"}>
                   {t('filterByExam')}
@@ -578,7 +644,7 @@ export default function CourseResourcePage() {
         {activeTab === "syllabus" ? (
           // SYLLABUS VIEW
           <div className="flex justify-center">
-            <div className={(isDark ? "bg-slate-900/40 border-slate-800" : "bg-white border-slate-200") + " rounded-lg border p-6 w-full max-w-4xl"}>
+            <div className={(isDark ? "bg-slate-900/40 border-slate-700" : "bg-white border-slate-200") + " rounded-lg border p-6 w-full max-w-4xl"}>
               <h3 className={(isDark ? "text-slate-200" : "text-slate-700") + " text-lg font-semibold mb-4"}>
                 {t('courseSyllabus')}
               </h3>
@@ -609,7 +675,7 @@ export default function CourseResourcePage() {
                 key={pl.id}
                 className={
                   (isDark
-                    ? "bg-slate-900/40 border-slate-800 hover:border-[#7DB4E5]/40"
+                    ? "bg-slate-900/40 border-slate-700 hover:border-[#7DB4E5]/40"
                     : "bg-white border-slate-200 hover:border-[#145C9E]/40") +
                   " rounded-lg border p-4 hover:shadow-sm transition"
                 }
@@ -638,8 +704,8 @@ export default function CourseResourcePage() {
           // OLD RESOURCES VIEW
           <div className="grid gap-6 lg:grid-cols-[1.05fr_0.4fr]">
             {/* left list */}
-            <div className={(isDark ? "bg-slate-900/40 border-slate-800" : "bg-white border-slate-200") + " rounded-lg border overflow-hidden"}>
-              <div className={(isDark ? "bg-slate-900/60 border-slate-800" : "bg-slate-50 border-slate-200") + " flex items-center justify-between border-b px-4 py-2"}>
+            <div className={(isDark ? "bg-slate-900/40 border-slate-700" : "bg-white border-slate-200") + " rounded-lg border overflow-hidden"}>
+              <div className={(isDark ? "bg-slate-900/60 border-slate-700" : "bg-slate-50 border-slate-200") + " flex items-center justify-between border-b px-4 py-2"}>
                 <p className={(isDark ? "text-slate-400" : "text-slate-500") + " text-xs font-medium"}>
                   {activeTab === "pyq"
                     ? filteredPyqSections.reduce(
@@ -820,7 +886,7 @@ export default function CourseResourcePage() {
 
             {/* right preview */}
             <aside className="space-y-4">
-              <div className={(isDark ? "bg-slate-900/40 border-slate-800" : "bg-white border-slate-200") + " rounded-lg border p-4 min-h-[220px]"}>
+              <div className={(isDark ? "bg-slate-900/40 border-slate-700" : "bg-white border-slate-200") + " rounded-lg border p-4 min-h-[220px]"}>
                 <h3 className={(isDark ? "text-slate-200" : "text-slate-700") + " text-sm font-semibold"}>
                   {t('preview')}
                 </h3>
@@ -876,7 +942,7 @@ export default function CourseResourcePage() {
         )}
           </>
         ) : (
-          <div className={(isDark ? "bg-slate-900/40 border-slate-800" : "bg-white border-slate-200") + " rounded-lg px-6 py-8 shadow-sm border text-center"}>
+          <div className={(isDark ? "bg-slate-900/40 border-slate-700" : "bg-white border-slate-200") + " rounded-lg px-6 py-8 shadow-sm border text-center"}>
             <div className="max-w-md mx-auto">
               <div className="text-5xl mb-4"> </div>
               <h2 className={(isDark ? "text-slate-100" : "text-slate-800") + " text-lg font-semibold mb-2"}>

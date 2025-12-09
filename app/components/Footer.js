@@ -9,7 +9,7 @@ export default function Footer() {
   const { t } = useTranslation();
   
   return (
-    <footer className={(isDark ? "bg-slate-900 border-slate-800" : "bg-white border-gray-200") + " border-t mt-auto"}>
+    <footer className={(isDark ? "bg-slate-900 border-slate-700" : "bg-white border-gray-200") + " border-t mt-auto"}>
       <div className="max-w-[1350px] mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-6">
           <div className="flex flex-col gap-3 flex-1">

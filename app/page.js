@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useApp } from "./context/AppContext";
 import { useTranslation } from "react-i18next";
 import CourseResourcePage from "./components/coursePage";
@@ -220,6 +221,7 @@ const getCourseColor = (courseCode, isDark) => {
 };
 
 export default function HomePage() {
+  const router = useRouter();
   const { lang, setLang, theme, setTheme, isRTL, isDark } = useApp();
   const { t } = useTranslation();
   const [selectedMajorCode, setSelectedMajorCode] = useState(null); // null means "show all"
@@ -317,152 +319,12 @@ export default function HomePage() {
         }
         dir={isRTL ? "rtl" : "ltr"}
       >
-        <Navbar onToggleMobileMenu={() => setShowMobileMenu(!showMobileMenu)} showMobileMenu={showMobileMenu} />
-        
-        {/* Mobile overlay */}
-        {showMobileMenu && (
-          <div
-            className="fixed inset-0 z-65 bg-black/50 md:hidden"
-            onClick={() => setShowMobileMenu(false)}
-          />
-        )}
-        
-        {/* Majors sidebar for mobile */}
-        <aside className={
-          "w-80 shrink-0 md:hidden fixed inset-y-0 z-70 transform transition-transform duration-300 " +
-          (isRTL ? "right-0 " : "left-0 ") +
-          (showMobileMenu ? "translate-x-0" : (isRTL ? "translate-x-full" : "-translate-x-full"))
-        }>
-          <div
-            className={
-              (isDark
-                ? "bg-slate-900 border-slate-800 shadow-sm"
-                : "bg-white border-slate-200 shadow-sm") +
-              " border flex flex-col h-full"
-            }
-          >
-            {/* Header with close button */}
-            <div className={(isDark ? "border-slate-800" : "border-slate-200") + " border-b px-5 py-4 flex items-start justify-between"}>
-              <div className="flex-1">
-                <h2
-                  className={
-                    (isDark ? "text-slate-100" : "text-slate-900") +
-                    " text-sm font-semibold"
-                  }
-                >
-                  {t('majorsTitle')}
-                </h2>
-                <p className={(isDark ? "text-slate-500" : "text-slate-400") + " mt-0.5 text-xs"}>
-                  {t('majorsSubtitle')}
-                </p>
-              </div>
-              
-              {/* Close button - Mobile only */}
-              <button
-                onClick={() => setShowMobileMenu(false)}
-                className={(isDark ? "text-slate-400 hover:text-slate-100" : "text-slate-400 hover:text-slate-900") + " transition-colors"}
-                aria-label="Close menu"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto py-2">
-              {/* Show All Courses Button */}
-              <div className="mb-4">
-                <button
-                  onClick={() => {
-                    setSelectedMajorCode(null);
-                    setShowMobileMenu(false);
-                    if (window.location.hash) window.location.href = window.location.pathname;
-                  }}
-                  className={
-                    "flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition " +
-                    (isDark
-                      ? "text-slate-400 hover:bg-slate-800/50"
-                      : "text-slate-500 hover:bg-slate-50")
-                  }
-                >
-                  <span className="font-medium">{t('showAllCourses')}</span>
-                </button>
-              </div>
-
-              {faculties.map((faculty) => (
-                <div key={faculty.id} className="mb-3">
-                  <div
-                    className={
-                      (isDark
-                        ? "text-[#7DB4E5] bg-[#7DB4E5]/3"
-                        : "text-[#145C9E] bg-slate-100") +
-                      " flex items-center justify-between px-4 py-2"
-                    }
-                  >
-                    <button
-                      onClick={() => toggleFaculty(faculty.id)}
-                      className={(isRTL ? "text-right" : "text-left") + " flex-1 text-xs font-bold uppercase tracking-wider"}
-                    >
-                      {lang === "en" ? faculty.nameEn : faculty.nameAr}
-                    </button>
-                  </div>
-                  {!collapsedFaculties.has(faculty.id) && (
-                    <ul>
-                      {faculty.majors.map((major) => (
-                        <li key={major.id}>
-                        <button
-                          onClick={() => {
-                            setSelectedMajorCode(major.code);
-                            setShowMobileMenu(false);
-                            if (window.location.hash) window.location.href = window.location.pathname;
-                          }}
-                            className={
-                              "flex w-full items-center justify-between px-4 py-2 " + (isRTL ? "text-right" : "text-left") + " text-sm transition " +
-                              (isDark
-                                ? "text-slate-400 hover:bg-slate-800/50"
-                                : "text-slate-500 hover:bg-slate-50")
-                            }
-                          >
-                            <span>{lang === "en" ? major.nameEn : major.nameAr}</span>
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              ))}
-            </div>
-            
-            {/* Mobile Settings Footer - Static text links */}
-            <div className={(isDark ? "border-slate-800 bg-slate-900" : "border-slate-200 bg-white") + " border-t px-5 py-4"}>
-              <div className="flex items-center justify-between text-sm">
-                <button
-                  onClick={() => setLang(lang === "en" ? "ar" : "en")}
-                  className={(isDark ? "text-slate-400 hover:text-slate-100" : "text-slate-500 hover:text-slate-900") + " transition-colors font-medium"}
-                >
-                  {t('langToggle')}
-                </button>
-                
-                <div className={(isDark ? "text-slate-700" : "text-slate-300") + " text-xs"}>/</div>
-                
-                <button
-                  onClick={() => setTheme(isDark ? "light" : "dark")}
-                  className={(isDark ? "text-slate-400 hover:text-slate-100" : "text-slate-500 hover:text-slate-900") + " transition-colors font-medium flex items-center gap-1.5"}
-                >
-                  {isDark ? (
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                  ) : (
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                    </svg>
-                  )}
-                  {isDark ? t('themeToggleLight') : t('themeToggleDark')}
-                </button>
-              </div>
-            </div>
-          </div>
-        </aside>
+        <Navbar 
+          onToggleMobileMenu={() => setShowMobileMenu(!showMobileMenu)} 
+          showMobileMenu={showMobileMenu}
+          selectedMajorCode={selectedMajorCode}
+          setSelectedMajorCode={setSelectedMajorCode}
+        />
         
         <CourseResourcePage />
       </div>
@@ -478,67 +340,44 @@ export default function HomePage() {
       }
       dir={isRTL ? "rtl" : "ltr"}
     >
-      <Navbar onToggleMobileMenu={() => setShowMobileMenu(!showMobileMenu)} showMobileMenu={showMobileMenu} />
+      <Navbar 
+        onToggleMobileMenu={() => setShowMobileMenu(!showMobileMenu)} 
+        showMobileMenu={showMobileMenu}
+        selectedMajorCode={selectedMajorCode}
+        setSelectedMajorCode={setSelectedMajorCode}
+      />
       {/* Main Shell */}
       <div className=" mb-10 mx-auto flex max-w-[1400px] gap-4 md:gap-10 px-5 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8 min-h-screen">
-        {/* Mobile overlay */}
-        {showMobileMenu && (
-          <div
-            className="fixed inset-0 z-65 bg-black/50 md:hidden"
-            onClick={() => setShowMobileMenu(false)}
-          />
-        )}
        
-        {/* Majors sidebar */}
-        <aside className={
-          "w-80 shrink-0 md:flex md:flex-col fixed md:relative inset-y-0 z-70 md:z-40 transform transition-transform duration-300 " +
-          (isRTL ? "right-0 " : "left-0 ") +
-          (showMobileMenu ? "translate-x-0" : (isRTL ? "translate-x-full" : "-translate-x-full")) +
-          " md:translate-x-0"
-        }>
+        {/* Majors sidebar - Desktop only */}
+        <aside className="w-80 shrink-0 hidden md:flex md:flex-col">
           <div
             className={
               (isDark
-                ? "bg-slate-900 md:bg-slate-900/30 border-slate-800 shadow-sm"
-                : "bg-white border-slate-200 shadow-sm") +
-              " md:rounded-xl border flex flex-col h-full"
+                ? "bg-slate-900 md:bg-slate-900/30 border-slate-700 "
+                : "bg-white border-slate-200") +
+              " md:rounded-lg border flex flex-col h-full"
             }
           >
-            {/* Header with close button */}
-            <div className={(isDark ? "border-slate-800" : "border-slate-200") + " border-b px-5 py-4 flex items-start justify-between"}>
-              <div className="flex-1">
-                <h2
-                  className={
-                    (isDark ? "text-slate-100" : "text-slate-900") +
-                    " text-sm font-semibold"
-                  }
-                >
-                  {t('majorsTitle')}
-                </h2>
-                <p className={(isDark ? "text-slate-500" : "text-slate-400") + " mt-0.5 text-xs"}>
-                  {t('majorsSubtitle')}
-                </p>
-              </div>
-              
-              {/* Close button - Mobile only */}
-              <button
-                onClick={() => setShowMobileMenu(false)}
-                className={(isDark ? "text-slate-400 hover:text-slate-100" : "text-slate-400 hover:text-slate-900") + " transition-colors md:hidden"}
-                aria-label="Close menu"
+            {/* Header */}
+            <div className={(isDark ? "border-slate-700" : "border-slate-200") + " border-b px-5 py-4"}>
+              <h2
+                className={
+                  (isDark ? "text-slate-100" : "text-slate-900") +
+                  " text-sm font-semibold"
+                }
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+                {t('majorsTitle')}
+              </h2>
+              <p className={(isDark ? "text-slate-500" : "text-slate-400") + " mt-0.5 text-xs"}>
+                {t('majorsSubtitle')}
+              </p>
             </div>
             <div className="flex-1 overflow-y-auto py-2">
               {/* Show All Courses Button */}
               <div className="mb-4">
                 <button
-                  onClick={() => {
-                    setSelectedMajorCode(null);
-                    setShowMobileMenu(false);
-                  }}
+                  onClick={() => setSelectedMajorCode(null)}
                   className={
                     "flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition " +
                     (selectedMajorCode === null
@@ -610,10 +449,7 @@ export default function HomePage() {
                         return (
                           <li key={major.id}>
                             <button
-                              onClick={() => {
-                                setSelectedMajorCode(major.code);
-                                setShowMobileMenu(false);
-                              }}
+                              onClick={() => setSelectedMajorCode(major.code)}
                               className={
                                 "flex w-full items-center justify-between px-4 py-2 " + (isRTL ? "text-right" : "text-left") + " text-sm transition " +
                                 (active
@@ -648,35 +484,6 @@ export default function HomePage() {
               ))}
             </div>
             
-            {/* Mobile Settings Footer - Static text links */}
-            <div className={(isDark ? "border-slate-800 bg-slate-900" : "border-slate-200 bg-white") + " md:hidden border-t px-5 py-4"}>
-              <div className="flex items-center justify-between text-sm">
-                <button
-                  onClick={() => setLang(lang === "en" ? "ar" : "en")}
-                  className={(isDark ? "text-slate-400 hover:text-slate-100" : "text-slate-500 hover:text-slate-900") + " transition-colors font-medium"}
-                >
-                  {t('langToggle')}
-                </button>
-                
-                <div className={(isDark ? "text-slate-700" : "text-slate-300") + " text-xs"}>/</div>
-                
-                <button
-                  onClick={() => setTheme(isDark ? "light" : "dark")}
-                  className={(isDark ? "text-slate-400 hover:text-slate-100" : "text-slate-500 hover:text-slate-900") + " transition-colors font-medium flex items-center gap-1.5"}
-                >
-                  {isDark ? (
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                  ) : (
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                    </svg>
-                  )}
-                  {isDark ? t('themeToggleLight') : t('themeToggleDark')}
-                </button>
-              </div>
-            </div>
           </div>
         </aside>
 
@@ -702,7 +509,7 @@ export default function HomePage() {
                   className={
                     "flex-1 sm:flex-auto rounded-lg border px-3 sm:px-4 py-2 text-sm outline-none transition " +
                     (isDark
-                      ? "border-slate-800 bg-slate-900/40 text-slate-100 placeholder:text-slate-500 focus:border-[#7DB4E5]"
+                      ? "border-slate-700 bg-slate-900/40 text-slate-100 placeholder:text-slate-500 focus:border-[#7DB4E5]"
                       : "border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus:border-[#145C9E] focus:bg-white")
                   }
                   placeholder={t('searchPlaceholder')}
@@ -722,7 +529,7 @@ export default function HomePage() {
                     onClick={() => window.location.hash = `course/${course.code.replace(/\s+/g, '')}`}
                     className={
                       (isDark
-                        ? "bg-slate-900/40 border-slate-800 hover:border-[#7DB4E5]/40 shadow-sm"
+                        ? "bg-slate-900/40 border-slate-700 hover:border-[#7DB4E5]/40 shadow-sm"
                         : "bg-white border-slate-200 hover:border-[#145C9E]/40 shadow-sm") +
                       " rounded-lg border p-3 sm:p-4 cursor-pointer transition hover:shadow-sm overflow-hidden"
                     }

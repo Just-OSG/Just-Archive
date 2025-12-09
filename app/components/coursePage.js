@@ -364,7 +364,7 @@ export default function CourseResourcePage() {
         {/* course header */}
         <section className={
           (isDark ? "bg-slate-900/30 border-slate-800" : "bg-white border-slate-200") +
-          " rounded-xl px-4 sm:px-6 py-4 sm:py-5 shadow-sm border flex flex-col sm:flex-row items-start justify-between gap-3 sm:gap-4"
+          " rounded-lg px-4 sm:px-6 py-4 sm:py-5 shadow-sm border flex flex-col sm:flex-row items-start justify-between gap-3 sm:gap-4"
         }>
           <div className="flex-1 w-full sm:w-auto">
             <button
@@ -876,9 +876,9 @@ export default function CourseResourcePage() {
         )}
           </>
         ) : (
-          <div className={(isDark ? "bg-slate-900/40 border-slate-800" : "bg-white border-slate-200") + " rounded-xl px-6 py-8 shadow-sm border text-center"}>
+          <div className={(isDark ? "bg-slate-900/40 border-slate-800" : "bg-white border-slate-200") + " rounded-lg px-6 py-8 shadow-sm border text-center"}>
             <div className="max-w-md mx-auto">
-              <div className="text-5xl mb-4">📚</div>
+              <div className="text-5xl mb-4"> </div>
               <h2 className={(isDark ? "text-slate-100" : "text-slate-800") + " text-lg font-semibold mb-2"}>
                 {t('noResourcesAvailable')}
               </h2>

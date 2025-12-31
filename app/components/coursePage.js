@@ -4,6 +4,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useApp } from "../context/AppContext";
 import { useTranslation } from "react-i18next";
+import ReviewSystem from "./ReviewSystem";
 
 // Course data - in production, this would come from your Strapi backend
 const ALL_COURSES = {
@@ -550,6 +551,23 @@ export default function CourseResourcePage() {
                 >
                   {t('youtubePlaylists')}
                 </button>
+                <button
+                  onClick={() => {
+                    setActiveTab("reviews");
+                    setSelectedResourceId(null);
+                  }}
+                  className={`px-3 py-2 text-sm whitespace-nowrap ${
+                    activeTab === "reviews"
+                      ? isDark
+                        ? "border-b-2 border-[#7DB4E5] text-slate-100"
+                        : "border-b-2 border-[#145C9E] text-slate-900"
+                      : isDark
+                      ? "text-slate-400"
+                      : "text-slate-500"
+                  }`}
+                >
+                  {t('reviews')}
+                </button>
               </div>
             </div>
 
@@ -700,6 +718,9 @@ export default function CourseResourcePage() {
               </p>
             )}
           </div>
+        ) : activeTab === "reviews" ? (
+          // REVIEWS VIEW
+          <ReviewSystem courseCode={courseCode} />
         ) : (
           // OLD RESOURCES VIEW
           <div className="grid gap-6 lg:grid-cols-[1.05fr_0.4fr]">

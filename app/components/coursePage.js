@@ -4,6 +4,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useApp } from "../context/AppContext";
 import { useTranslation } from "react-i18next";
+import ReviewSystem from "./ReviewSystem";
 
 // Course data - in production, this would come from your Strapi backend
 const ALL_COURSES = {
@@ -701,7 +702,7 @@ export default function CourseResourcePage() {
             )}
           </div>
         ) : (
-          // OLD RESOURCES VIEW
+          // RESOURCES VIEW (notes, assignments, pyq)
           <div className="grid gap-6 lg:grid-cols-[1.05fr_0.4fr]">
             {/* left list */}
             <div className={(isDark ? "bg-slate-900/40 border-slate-700" : "bg-white border-slate-200") + " rounded-lg border overflow-hidden"}>
@@ -937,6 +938,15 @@ export default function CourseResourcePage() {
                   </p>
                 )}
               </div>
+              
+              {/* Review System - Only show for Notes tab */}
+              {activeTab === "notes" && selectedResource && (
+                <ReviewSystem 
+                  courseCode={courseCode}
+                  fileId={selectedResource.id}
+                  fileName={selectedResource.name}
+                />
+              )}
             </aside>
           </div>
         )}

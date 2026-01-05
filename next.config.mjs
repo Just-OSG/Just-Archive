@@ -2,7 +2,7 @@
 const nextConfig = {
   /* config options here */
   reactCompiler: true,
-  output: 'export',
+  // Removed output: 'export' for SSR support
   images: {
     unoptimized: true,
   },

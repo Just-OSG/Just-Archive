@@ -1,16 +1,25 @@
-// app/components/ReviewSystem.js
+// app/components/ReviewSystem.tsx
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
 import { useApp } from "../context/AppContext";
 import { useTranslation } from "react-i18next";
 
+type StarSize = "sm" | "md" | "lg";
+
+interface StarRatingProps {
+  rating: number;
+  onRatingChange?: (rating: number) => void;
+  interactive?: boolean;
+  size?: StarSize;
+}
+
 // Star Rating Component
-function StarRating({ rating, onRatingChange, interactive = false, size = "md" }) {
+function StarRating({ rating, onRatingChange, interactive = false, size = "md" }: StarRatingProps) {
   const { isDark } = useApp();
   const [hoverRating, setHoverRating] = useState(0);
 
-  const sizeClasses = {
+  const sizeClasses: Record<StarSize, string> = {
     sm: "w-4 h-4",
     md: "w-5 h-5",
     lg: "w-6 h-6",
@@ -53,12 +62,27 @@ function StarRating({ rating, onRatingChange, interactive = false, size = "md" }
   );
 }
 
+interface ReviewSystemProps {
+  courseCode: string;
+  fileId: string;
+  fileName: string;
+}
+
+interface RatingDistribution {
+  [key: number]: number;
+}
+
+interface RatingData {
+  ratings: number[];
+  userRating: number;
+}
+
 // Main File Review System Component - Ratings only, no comments
-export default function ReviewSystem({ courseCode, fileId, fileName }) {
+export default function ReviewSystem({ courseCode, fileId, fileName }: ReviewSystemProps) {
   const { isDark } = useApp();
   const { t } = useTranslation();
   const [userRating, setUserRating] = useState(0);
-  const [allRatings, setAllRatings] = useState([]);
+  const [allRatings, setAllRatings] = useState<number[]>([]);
 
   // Load ratings from localStorage
   useEffect(() => {
@@ -66,7 +90,7 @@ export default function ReviewSystem({ courseCode, fileId, fileName }) {
     const stored = localStorage.getItem(storageKey);
     if (stored) {
       try {
-        const data = JSON.parse(stored);
+        const data: RatingData = JSON.parse(stored);
         setAllRatings(data.ratings || []);
         setUserRating(data.userRating || 0);
       } catch (e) {
@@ -77,25 +101,27 @@ export default function ReviewSystem({ courseCode, fileId, fileName }) {
 
   // Calculate average rating
   const averageRating = useMemo(() => {
-    if (allRatings.length === 0) return 0;
+    if (allRatings.length === 0) return "0";
     const sum = allRatings.reduce((acc, rating) => acc + rating, 0);
     return (sum / allRatings.length).toFixed(1);
   }, [allRatings]);
 
   // Rating distribution
-  const ratingDistribution = useMemo(() => {
-    const dist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+  const ratingDistribution = useMemo<RatingDistribution>(() => {
+    const dist: RatingDistribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
     allRatings.forEach((rating) => {
-      dist[rating]++;
+      if (rating in dist) {
+        dist[rating]++;
+      }
     });
     return dist;
   }, [allRatings]);
 
   // Handle rating submission
-  const handleRatingChange = (newRating) => {
+  const handleRatingChange = (newRating: number) => {
     const storageKey = `fileRatings_${courseCode}_${fileId}`;
     
-    let newAllRatings;
+    let newAllRatings: number[];
     if (userRating === 0) {
       // New rating
       newAllRatings = [...allRatings, newRating];

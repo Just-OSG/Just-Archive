@@ -8,7 +8,10 @@ import { useTranslation } from "react-i18next";
 import CourseResourcePage from "./components/coursePage";
 import Navbar from "./components/Navbar";
 
-const BRAND = {
+import { FACULTIES } from "./constants/faculties";
+import { BrandColors, Faculty, Major, CourseWithCode } from "@/types";
+
+const BRAND: BrandColors = {
   light: {
     primary: "#2467a4",        // deep academic blue
     primarySoft: "#E6F1FB",    // soft background
@@ -21,146 +24,15 @@ const BRAND = {
   },
 };
 
-
-// Faculties with their majors
-const FACULTIES = [
-  {
-    id: 1,
-    nameEn: "Medicine",
-    nameAr: "الطب",
-    majors: [
-      { id: 1, code: "MD", nameEn: "Doctor Of Medicine (MD)", nameAr: "دكتور في الطب" },
-      { id: 39, code: "DVM", nameEn: "Doctor Of Veterinary Medicine (DVM)", nameAr: "دكتور في الطب البيطري" },
-      { id: 33, code: "DDS", nameEn: "Doctor Of Dental Surgery", nameAr: "دكتور في جراحة الأسنان" },
-    ]
-  },
-  {
-    id: 2,
-    nameEn: "Applied Medical Sciences",
-    nameAr: "العلوم الطبية التطبيقية",
-    majors: [
-      { id: 2, code: "HMP", nameEn: "Health Management And Policy", nameAr: "إدارة وسياسة صحية" },
-      { id: 3, code: "MLS", nameEn: "Medical Laboratory Sciences", nameAr: "علوم المختبرات الطبية" },
-      { id: 4, code: "PARA", nameEn: "Paramedics", nameAr: "المسعفين" },
-      { id: 5, code: "RT", nameEn: "Radiologic Technology", nameAr: "تكنولوجيا الأشعة" },
-      { id: 6, code: "OPT", nameEn: "Optometry", nameAr: "البصريات" },
-      { id: 7, code: "PT", nameEn: "Physical Therapy", nameAr: "العلاج الطبيعي" },
-      { id: 8, code: "OT", nameEn: "Occupational Therapy", nameAr: "العلاج الوظيفي" },
-      { id: 9, code: "ASP", nameEn: "Audiology & Speech Pathology", nameAr: "السمعيات وأمراض النطق" },
-      { id: 10, code: "RESP", nameEn: "Respiratory Therapy", nameAr: "العلاج التنفسي" },
-      { id: 11, code: "ANES", nameEn: "Anesthesia Technology", nameAr: "تكنولوجيا التخدير" },
-      { id: 12, code: "CPSY", nameEn: "Clinical Psychology", nameAr: "علم النفس السريري" },
-      { id: 13, code: "DDT", nameEn: "Digital Dental Technology", nameAr: "تكنولوجيا الأسنان الرقمية" },
-      { id: 14, code: "DH", nameEn: "Dental Hygienist", nameAr: "صحة الأسنان" },
-    ]
-  },
-  {
-    id: 4,
-    nameEn: "Pharmacy",
-    nameAr: "الصيدلة",
-    majors: [
-      { id: 27, code: "PHAR", nameEn: "Pharmacy", nameAr: "الصيدلة" },
-      { id: 28, code: "PHARMD", nameEn: "Doctor Of Pharmacy (Pharm D.)", nameAr: "دكتور في الصيدلة" },
-      { id: 29, code: "PBM", nameEn: "Pharmaceutical And Biological Manufacturing", nameAr: "التصنيع الصيدلاني والبيولوجي" },
-      { id: 30, code: "ACS", nameEn: "Applied Cosmetic Sciences", nameAr: "علوم التجميل التطبيقية" },
-    ]
-  },
-    {
-    id: 3,
-    nameEn: "Engineering",
-    nameAr: "الهندسة",
-    majors: [
-      { id: 15, code: "CHE", nameEn: "Chemical Engineering", nameAr: "الهندسة الكيميائية" },
-      { id: 16, code: "CE", nameEn: "Civil Engineering", nameAr: "الهندسة المدنية" },
-      { id: 17, code: "EE", nameEn: "Electrical Engineering", nameAr: "الهندسة الكهربائية" },
-      { id: 18, code: "ME", nameEn: "Mechanical Engineering", nameAr: "الهندسة الميكانيكية" },
-      { id: 19, code: "BME", nameEn: "Biomedical Engineering", nameAr: "الهندسة الطبية الحيوية" },
-      { id: 20, code: "IE", nameEn: "Industrial Engineering", nameAr: "الهندسة الصناعية" },
-      { id: 21, code: "AE", nameEn: "Aeronautical Engineering", nameAr: "هندسة الطيران" },
-      { id: 22, code: "AMT", nameEn: "Aircraft Maintenance Technology", nameAr: "تكنولوجيا صيانة الطائرات" },
-      { id: 23, code: "PDDE", nameEn: "Product Design & Development Engineering", nameAr: "هندسة تصميم وتطوير المنتجات" },
-      { id: 24, code: "NE", nameEn: "Nuclear Engineering", nameAr: "الهندسة النووية" },
-      { id: 25, code: "IEST", nameEn: "Intelligent Electrical Systems Technology", nameAr: "تكنولوجيا الأنظمة الكهربائية الذكية" },
-      { id: 26, code: "UAVT", nameEn: "Unmanned Aerial Vehicles Technology", nameAr: "تكنولوجيا المركبات الجوية بدون طيار" },
-    ]
-  },
-  {
-    id: 5,
-    nameEn: "Nursing",
-    nameAr: "التمريض",
-    majors: [
-      { id: 31, code: "NURS", nameEn: "Nursing", nameAr: "التمريض" },
-      { id: 32, code: "MID", nameEn: "Midwifery", nameAr: "القبالة" },
-    ]
-  },
-  {
-    id: 7,
-    nameEn: "Agriculture",
-    nameAr: "الزراعة",
-    majors: [
-      { id: 34, code: "SI", nameEn: "Soil & Irrigation", nameAr: "التربة والري" },
-      { id: 35, code: "DA", nameEn: "Digital Agriculture", nameAr: "الزراعة الرقمية" },
-      { id: 36, code: "CN", nameEn: "Clinical Nutrition", nameAr: "التغذية السريرية" },
-      { id: 37, code: "PST", nameEn: "Plant Science And Technology", nameAr: "علوم وتكنولوجيا النبات" },
-      { id: 38, code: "AST", nameEn: "Animal Science And Technology", nameAr: "علوم وتكنولوجيا الحيوان" },
-    ]
-  },
-  {
-    id: 9,
-    nameEn: "Computer & Information Technology",
-    nameAr: "الحاسوب وتكنولوجيا المعلومات",
-    majors: [
-      { id: 40, code: "CPE", nameEn: "Computer Engineering", nameAr: "هندسة الحاسوب" },
-      { id: 41, code: "CS", nameEn: "Computer Science", nameAr: "علوم الحاسوب" },
-      { id: 42, code: "NES", nameEn: "Network Engineering And Security", nameAr: "هندسة وأمن الشبكات" },
-      { id: 43, code: "SE", nameEn: "Software Engineering", nameAr: "هندسة البرمجيات" },
-      { id: 44, code: "CYB", nameEn: "Cybersecurity", nameAr: "الأمن السيبراني" },
-      { id: 45, code: "DS", nameEn: "Data Science", nameAr: "علوم البيانات" },
-      { id: 46, code: "AI", nameEn: "Artificial Intelligence", nameAr: "الذكاء الاصطناعي" },
-      { id: 47, code: "IOT", nameEn: "Internet Of Things", nameAr: "إنترنت الأشياء" },
-      { id: 48, code: "CGDD", nameEn: "Computer Games Design And Development", nameAr: "تصميم وتطوير ألعاب الحاسوب" },
-      { id: 49, code: "HIS", nameEn: "Health Information Systems", nameAr: "أنظمة المعلومات الصحية" },
-      { id: 50, code: "ROB", nameEn: "Robotics Science", nameAr: "علم الروبوتات" },
-    ]
-  },
-    {
-    id: 11,
-    nameEn: "Institute Of Nanotechnology",
-    nameAr: "معهد تكنولوجيا النانو",
-    majors: [
-      { id: 56, code: "NMS", nameEn: "Nanotechnology And Materials Science", nameAr: "تكنولوجيا النانو وعلوم المواد" },
-    ]
-  },
-  {
-    id: 12,
-    nameEn: "Architecture And Design",
-    nameAr: "العمارة والتصميم",
-    majors: [
-      { id: 57, code: "AR", nameEn: "Architecture", nameAr: "العمارة" },
-      { id: 58, code: "UEPE", nameEn: "Urban And Environmental Planning Engineering", nameAr: "هندسة التخطيط العمراني والبيئي" },
-      { id: 59, code: "DFMT", nameEn: "Digital Film And Multimedia Technology", nameAr: "تكنولوجيا الأفلام الرقمية والوسائط المتعددة" },
-      { id: 60, code: "AGD", nameEn: "Animation And Game Design", nameAr: "تصميم الرسوم المتحركة والألعاب" },
-    ]
-  },
-    {
-    id: 10,
-    nameEn: "Science & Arts",
-    nameAr: "العلوم والآداب",
-    majors: [
-      { id: 51, code: "ELAL", nameEn: "English Language And Applied Linguistics", nameAr: "اللغة الإنجليزية واللسانيات التطبيقية" },
-      { id: 52, code: "MATH", nameEn: "Mathematics", nameAr: "الرياضيات" },
-      { id: 53, code: "CHEM", nameEn: "Chemistry", nameAr: "الكيمياء" },
-      { id: 54, code: "PHYS", nameEn: "Physics", nameAr: "الفيزياء" },
-      { id: 55, code: "BGE", nameEn: "Biotechnology & Genetic Engineering", nameAr: "التكنولوجيا الحيوية والهندسة الوراثية" },
-    ]
-  },
-];
-
 // Get all majors as flat array
 const MAJORS = FACULTIES.flatMap(f => f.majors);
 
 // dummy courses grouped by major code (later: fetch from Strapi by major id)
-const COURSES_BY_MAJOR = {
+interface CoursesByMajor {
+  [key: string]: CourseWithCode[];
+}
+
+const COURSES_BY_MAJOR: CoursesByMajor = {
   CPE: [
     { id: 101, code: "CPE 101", nameEn: "Introduction to Programming", nameAr: "مقدمة في البرمجة" },
     { id: 102, code: "CPE 241", nameEn: "Data Structures", nameAr: "هياكل البيانات" },
@@ -194,7 +66,16 @@ const COURSES_BY_MAJOR = {
 };
 
 // Color mapping for different major codes
-const MAJOR_COLORS = {
+interface MajorColor {
+  light: string;
+  dark: string;
+}
+
+interface MajorColors {
+  [key: string]: MajorColor;
+}
+
+const MAJOR_COLORS: MajorColors = {
   CPE: { light: "#f97316", dark: "#fb923c" },      // orange
   EE: { light: "#eab308", dark: "#fbbf24" },       // yellow
   ME: { light: "#10b981", dark: "#34d399" },       // green
@@ -213,7 +94,7 @@ const MAJOR_COLORS = {
 };
 
 // Helper function to get color for a course based on its code
-const getCourseColor = (courseCode, isDark) => {
+const getCourseColor = (courseCode: string, isDark: boolean): string => {
   const majorCode = courseCode.split(' ')[0]; // Extract major code (e.g., "CPE" from "CPE 101")
   const colors = MAJOR_COLORS[majorCode];
   if (!colors) return isDark ? "#fb923c" : "#f97316"; // fallback to orange
@@ -224,12 +105,12 @@ export default function HomePage() {
   const router = useRouter();
   const { lang, setLang, theme, setTheme, isRTL, isDark } = useApp();
   const { t } = useTranslation();
-  const [selectedMajorCode, setSelectedMajorCode] = useState(null); // null means "show all"
+  const [selectedMajorCode, setSelectedMajorCode] = useState<string | null>(null); // null means "show all"
   const [currentHash, setCurrentHash] = useState('');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   
   // Always start with default order to avoid hydration mismatch
-  const [faculties, setFaculties] = useState(FACULTIES);
+  const [faculties, setFaculties] = useState<Faculty[]>(FACULTIES);
   
   // Monitor hash changes
   useEffect(() => {
@@ -271,7 +152,7 @@ export default function HomePage() {
     new Set(FACULTIES.map(f => f.id))
   );
 
-  const toggleFaculty = (facultyId) => {
+  const toggleFaculty = (facultyId: number) => {
     setCollapsedFaculties(prev => {
       const next = new Set(prev);
       if (next.has(facultyId)) {
@@ -283,7 +164,7 @@ export default function HomePage() {
     });
   };
 
-  const moveFaculty = (index, direction) => {
+  const moveFaculty = (index: number, direction: 'up' | 'down') => {
     const newFaculties = [...faculties];
     const newIndex = direction === 'up' ? index - 1 : index + 1;
     if (newIndex >= 0 && newIndex < newFaculties.length) {

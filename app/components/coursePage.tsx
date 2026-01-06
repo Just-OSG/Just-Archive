@@ -1,13 +1,18 @@
-// app/components/coursePage.js
+// app/components/coursePage.tsx
 "use client";
 
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useApp } from "../context/AppContext";
 import { useTranslation } from "react-i18next";
 import ReviewSystem from "./ReviewSystem";
+import { Course, CompletedFiles, ResourceSection } from "@/types";
 
-// Course data - in production, this would come from your Strapi backend
-const ALL_COURSES = {
+// Course data - mockups
+interface AllCourses {
+  [key: string]: Course;
+}
+
+const ALL_COURSES: AllCourses = {
   "CPE101": {
     code: "CPE 101",
     nameEn: "Introduction to Programming",
@@ -163,12 +168,12 @@ export default function CourseResourcePage() {
   // added "youtube"
   const [activeTab, setActiveTab] = useState("pyq");
   const [selectedResourceId, setSelectedResourceId] = useState("pyq-first-2025");
-  const [examFilter, setExamFilter] = useState("all"); // "all", "first", "second", "midterm", "final"
+  const [examFilter, setExamFilter] = useState<"all" | "first" | "second" | "midterm" | "final">("all"); // "all", "first", "second", "midterm", "final"
   
   // Load completed files from localStorage - always start with empty object to avoid hydration mismatch
-  const [completedFiles, setCompletedFiles] = useState({});
+  const [completedFiles, setCompletedFiles] = useState<CompletedFiles>({});
   const mountedRef = useRef(false);
-  const tabsRef = useRef(null);
+  const tabsRef = useRef<HTMLDivElement>(null);
 
   // Load from localStorage after mount
   useEffect(() => {
@@ -206,7 +211,7 @@ export default function CourseResourcePage() {
   }, [completedFiles, courseCode]);
 
   // Toggle file completion status
-  const toggleFileCompletion = (fileId) => {
+  const toggleFileCompletion = (fileId: string) => {
     setCompletedFiles((prev) => ({
       ...prev,
       [fileId]: !prev[fileId],
@@ -248,7 +253,7 @@ export default function CourseResourcePage() {
   };
 
   // PYQs grouped by exam term in your order
-  const pyqSections = useMemo(() => [
+  const pyqSections = useMemo<ResourceSection[]>(() => [
     {
       section: "First Exam",
       items: [

@@ -1,23 +1,38 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { Theme, Language } from "@/types";
 import "../i18n/config";
 
-const AppContext = createContext();
+interface AppContextType {
+  lang: Language;
+  setLang: (lang: Language) => void;
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+  isRTL: boolean;
+  isDark: boolean;
+  mounted: boolean;
+}
 
-export function AppProvider({ children }) {
+const AppContext = createContext<AppContextType | undefined>(undefined);
+
+interface AppProviderProps {
+  children: ReactNode;
+}
+
+export function AppProvider({ children }: AppProviderProps) {
   const { i18n } = useTranslation();
   
   // Always start with defaults for SSR
-  const [lang, setLang] = useState("en");
-  const [theme, setTheme] = useState("light");
+  const [lang, setLang] = useState<Language>("en");
+  const [theme, setTheme] = useState<Theme>("light");
   const [mounted, setMounted] = useState(false);
 
   // Load from localStorage after mount to avoid hydration mismatch
   useEffect(() => {
-    const savedLang = localStorage.getItem("lang") || "en";
-    const savedTheme = localStorage.getItem("theme") || "light";
+    const savedLang = (localStorage.getItem("lang") as Language) || "en";
+    const savedTheme = (localStorage.getItem("theme") as Theme) || "light";
     
     setLang(savedLang);
     setTheme(savedTheme);
@@ -56,7 +71,7 @@ export function AppProvider({ children }) {
     }
   }, [theme, mounted]);
 
-  const value = {
+  const value: AppContextType = {
     lang,
     setLang,
     theme,
@@ -74,7 +89,7 @@ export function AppProvider({ children }) {
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
 
-export function useApp() {
+export function useApp(): AppContextType {
   const context = useContext(AppContext);
   if (!context) {
     throw new Error("useApp must be used within AppProvider");

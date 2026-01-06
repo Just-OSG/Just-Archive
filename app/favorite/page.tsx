@@ -6,11 +6,13 @@ import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
 
+import { FavoriteCourse } from "@/types";
+
 export default function FavoritesPage() {
   const { isDark, lang, isRTL } = useApp();
   const { t } = useTranslation();
   const router = useRouter();
-  const [favoriteCourses, setFavoriteCourses] = useState([]);
+  const [favoriteCourses, setFavoriteCourses] = useState<FavoriteCourse[]>([]);
   const [loading, setLoading] = useState(true);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
@@ -28,13 +30,13 @@ export default function FavoritesPage() {
     setLoading(false);
   }, []);
 
-  const removeFavorite = (courseCode) => {
+  const removeFavorite = (courseCode: string) => {
     const updatedFavorites = favoriteCourses.filter(course => course.code !== courseCode);
     setFavoriteCourses(updatedFavorites);
     localStorage.setItem('favoriteCourses', JSON.stringify(updatedFavorites));
   };
 
-  const goToCourse = (courseCode) => {
+  const goToCourse = (courseCode: string) => {
     const formattedCode = courseCode.replace(/\s+/g, '');
     router.push(`/#course/${formattedCode}`);
   };

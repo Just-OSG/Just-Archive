@@ -1,4 +1,5 @@
 import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { AppProvider } from "./context/AppContext";
 import Footer from "./components/Footer";
@@ -54,6 +55,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           {children}
           <Footer />
         </AppProvider>
+        <SpeedInsights />
       </body>
     </html>
   );

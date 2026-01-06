@@ -6,14 +6,22 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "wrangler d1 execute just-archive-db --remote --file=./db/migrations/0000_initial_schema.sql",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.962.0",
+    "@aws-sdk/s3-request-presigner": "^3.962.0",
+    "@cloudflare/workers-types": "^4.20260103.0",
+    "drizzle-orm": "^0.45.1",
     "i18next": "^25.6.2",
     "next": "^15.5.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-i18next": "^16.3.3"
+    "react-i18next": "^16.3.3",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -22,9 +30,11 @@
     "@types/react-dom": "^19.2.3",
     "babel-plugin-react-compiler": "1.0.0",
     "baseline-browser-mapping": "^2.9.5",
+    "drizzle-kit": "^0.31.8",
     "eslint": "^9",
     "eslint-config-next": "16.0.1",
     "tailwindcss": "^4",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "wrangler": "^4.54.0"
   }
 }

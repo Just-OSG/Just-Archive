@@ -29,21 +29,25 @@ export default function Navbar({ onToggleMobileMenu, showMobileMenu = false, sel
     const savedOrder = localStorage.getItem('facultiesOrder');
     if (savedOrder) {
       try {
-        const orderIds = JSON.parse(savedOrder);
+        const orderIds: number[] = JSON.parse(savedOrder);
         const ordered = orderIds
-          .map(id => FACULTIES.find(f => f.id === id))
-          .filter(Boolean);
+          .map((id: number) => FACULTIES.find(f => f.id === id))
+          .filter(Boolean) as Faculty[];
         
         const existingIds = new Set(orderIds);
         const newFaculties = FACULTIES.filter(f => !existingIds.has(f.id));
         
         const newOrder = [...ordered, ...newFaculties];
-        setFaculties(prev => {
-          if (JSON.stringify(prev.map(f => f.id)) !== JSON.stringify(newOrder.map(f => f.id))) {
-            return newOrder;
-          }
-          return prev;
-        });
+        
+        // Use setTimeout to avoid synchronous setState in effect
+        setTimeout(() => {
+          setFaculties(prev => {
+            if (JSON.stringify(prev.map(f => f.id)) !== JSON.stringify(newOrder.map(f => f.id))) {
+              return newOrder;
+            }
+            return prev;
+          });
+        }, 0);
       } catch (e) {
         console.error("Failed to load faculty order", e);
       }
@@ -90,7 +94,7 @@ export default function Navbar({ onToggleMobileMenu, showMobileMenu = false, sel
       dir={isRTL ? "rtl" : "ltr"}
       onClick={(e) => {
         // Only navigate if clicking on the header background, not on buttons
-        if (e.target === e.currentTarget || e.target.closest('.header-container') === e.currentTarget.firstChild) {
+        if (e.target === e.currentTarget || (e.target instanceof HTMLElement && e.target.closest('.header-container') === e.currentTarget.firstChild)) {
           router.push("/");
         }
       }}
@@ -340,6 +344,7 @@ export default function Navbar({ onToggleMobileMenu, showMobileMenu = false, sel
                       onClick={() => moveFaculty(index, 'up')}
                       disabled={index === 0}
                       className={(isDark ? "text-slate-500 hover:text-[#7DB4E5] disabled:opacity-30" : "text-slate-500 hover:text-[#145C9E] disabled:opacity-30") + " p-1 disabled:cursor-not-allowed"}
+                      aria-label="Move faculty up"
                     >
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
@@ -349,6 +354,7 @@ export default function Navbar({ onToggleMobileMenu, showMobileMenu = false, sel
                       onClick={() => moveFaculty(index, 'down')}
                       disabled={index === faculties.length - 1}
                       className={(isDark ? "text-slate-500 hover:text-[#7DB4E5] disabled:opacity-30" : "text-slate-500 hover:text-[#145C9E] disabled:opacity-30") + " p-1 disabled:cursor-not-allowed"}
+                      aria-label="Move faculty down"
                     >
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />

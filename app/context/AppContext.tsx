@@ -34,19 +34,22 @@ export function AppProvider({ children }: AppProviderProps) {
     const savedLang = (localStorage.getItem("lang") as Language) || "en";
     const savedTheme = (localStorage.getItem("theme") as Theme) || "light";
     
-    setLang(savedLang);
-    setTheme(savedTheme);
-    i18n.changeLanguage(savedLang);
-    document.documentElement.setAttribute('lang', savedLang);
-    
-    // Apply theme to document
-    if (savedTheme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-    
-    setMounted(true);
+    // Use setTimeout to avoid synchronous setState in effect
+    setTimeout(() => {
+      setLang(savedLang);
+      setTheme(savedTheme);
+      i18n.changeLanguage(savedLang);
+      document.documentElement.setAttribute('lang', savedLang);
+      
+      // Apply theme to document
+      if (savedTheme === "dark") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+      
+      setMounted(true);
+    }, 0);
   }, [i18n]);
 
   // Save preferences to localStorage when they change

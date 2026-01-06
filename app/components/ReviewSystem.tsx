@@ -91,8 +91,12 @@ export default function ReviewSystem({ courseCode, fileId, fileName }: ReviewSys
     if (stored) {
       try {
         const data: RatingData = JSON.parse(stored);
-        setAllRatings(data.ratings || []);
-        setUserRating(data.userRating || 0);
+        
+        // Use setTimeout to avoid synchronous setState in effect
+        setTimeout(() => {
+          setAllRatings(data.ratings || []);
+          setUserRating(data.userRating || 0);
+        }, 0);
       } catch (e) {
         console.error("Failed to parse ratings from localStorage", e);
       }

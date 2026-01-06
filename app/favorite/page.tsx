@@ -19,15 +19,19 @@ export default function FavoritesPage() {
   useEffect(() => {
     // Load favorites from localStorage
     const favoritesStored = localStorage.getItem('favoriteCourses');
-    if (favoritesStored) {
-      try {
-        const favorites = JSON.parse(favoritesStored);
-        setFavoriteCourses(favorites);
-      } catch (e) {
-        console.error("Failed to parse favorites from localStorage", e);
+    
+    // Use setTimeout to avoid synchronous setState in effect
+    setTimeout(() => {
+      if (favoritesStored) {
+        try {
+          const favorites = JSON.parse(favoritesStored);
+          setFavoriteCourses(favorites);
+        } catch (e) {
+          console.error("Failed to parse favorites from localStorage", e);
+        }
       }
-    }
-    setLoading(false);
+      setLoading(false);
+    }, 0);
   }, []);
 
   const removeFavorite = (courseCode: string) => {

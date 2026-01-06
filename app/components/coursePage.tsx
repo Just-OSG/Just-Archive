@@ -5,7 +5,7 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { useApp } from "../context/AppContext";
 import { useTranslation } from "react-i18next";
 import ReviewSystem from "./ReviewSystem";
-import { Course, CompletedFiles, ResourceSection } from "@/types";
+import { Course, CompletedFiles, ResourceSection, FavoriteCourse } from "@/types";
 
 // Course data - mockups
 interface AllCourses {
@@ -167,7 +167,7 @@ export default function CourseResourcePage() {
 
   // added "youtube"
   const [activeTab, setActiveTab] = useState("pyq");
-  const [selectedResourceId, setSelectedResourceId] = useState("pyq-first-2025");
+  const [selectedResourceId, setSelectedResourceId] = useState<string | null>("pyq-first-2025");
   const [examFilter, setExamFilter] = useState<"all" | "first" | "second" | "midterm" | "final">("all"); // "all", "first", "second", "midterm", "final"
   
   // Load completed files from localStorage - always start with empty object to avoid hydration mismatch
@@ -193,8 +193,8 @@ export default function CourseResourcePage() {
     const favoritesStored = localStorage.getItem('favoriteCourses');
     if (favoritesStored) {
       try {
-        const favorites = JSON.parse(favoritesStored);
-        setIsFavorite(favorites.some(fav => fav.code === courseCode));
+        const favorites: FavoriteCourse[] = JSON.parse(favoritesStored);
+        setIsFavorite(favorites.some((fav: FavoriteCourse) => fav.code === courseCode));
       } catch (e) {
         console.error("Failed to parse favorites from localStorage", e);
       }
@@ -241,7 +241,7 @@ export default function CourseResourcePage() {
     
     if (isFavorite) {
       // Remove from favorites
-      favorites = favorites.filter(fav => fav.code !== courseCode);
+      favorites = favorites.filter((fav: FavoriteCourse) => fav.code !== courseCode);
       setIsFavorite(false);
     } else {
       // Add to favorites
@@ -394,7 +394,7 @@ export default function CourseResourcePage() {
     activeTab === "pyq"
       ? pyqSections
           .flatMap((sec) => sec.items)
-          .find((r) => r.id === selectedResourceId)
+          .find((r) => r.id === selectedResourceId) || null
       : flatCurrentResources.find((r) => r.id === selectedResourceId) || null;
 
   // Filter PYQ sections based on exam filter

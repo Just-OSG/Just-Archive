@@ -64,6 +64,10 @@ export interface CompletedFiles {
   [key: string]: boolean;
 }
 
-export interface CourseWithCode extends Course {
+export interface CourseWithCode {
+  id: number;
+  code: string;
+  nameEn: string;
+  nameAr: string;
   majorCode?: string;
 }

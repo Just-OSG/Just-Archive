@@ -2,12 +2,11 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { useApp } from "../context/AppContext";
 import { useTranslation } from "react-i18next";
 import ReviewSystem from "./ReviewSystem";
 import { Course, CompletedFiles, ResourceSection, FavoriteCourse } from "@/types";
-
-// Course data - mockups
 interface AllCourses {
   [key: string]: Course;
 }
@@ -127,30 +126,17 @@ const ALL_COURSES: AllCourses = {
   },
 };
 
-export default function CourseResourcePage() {
+interface CourseResourcePageProps {
+  courseId: string;
+}
+
+export default function CourseResourcePage({ courseId }: CourseResourcePageProps) {
+  const router = useRouter();
   const { isDark, lang, isRTL } = useApp();
   const { t } = useTranslation();
   
-  // Get course code from URL hash
-  const [courseCode, setCourseCode] = useState("");
-  const [isFavorite, setIsFavorite] = useState(false);
-  
-  useEffect(() => {
-    const getCodeFromHash = () => {
-      const hash = window.location.hash.slice(1); // Remove '#'
-      const match = hash.match(/^course\/(.+)$/);
-      return match ? match[1].toUpperCase() : "";
-    };
-    
-    setCourseCode(getCodeFromHash());
-    
-    const handleHashChange = () => {
-      setCourseCode(getCodeFromHash());
-    };
-    
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
+  // Use the courseId prop directly, convert to uppercase for consistency
+  const courseCode = courseId.toUpperCase();
   
   // Get course data or show 404
   const course = useMemo(() => {
@@ -170,38 +156,43 @@ export default function CourseResourcePage() {
   const [selectedResourceId, setSelectedResourceId] = useState<string | null>("pyq-first-2025");
   const [examFilter, setExamFilter] = useState<"all" | "first" | "second" | "midterm" | "final">("all"); // "all", "first", "second", "midterm", "final"
   
-  // Load completed files from localStorage - always start with empty object to avoid hydration mismatch
-  const [completedFiles, setCompletedFiles] = useState<CompletedFiles>({});
-  const mountedRef = useRef(false);
-  const tabsRef = useRef<HTMLDivElement>(null);
-
-  // Load from localStorage after mount
-  useEffect(() => {
+  // Load completed files from localStorage using lazy initialization
+  const [completedFiles, setCompletedFiles] = useState<CompletedFiles>(() => {
+    if (typeof window === 'undefined') return {};
     const storageKey = `completedFiles_${courseCode}`;
     const stored = localStorage.getItem(storageKey);
     if (stored) {
       try {
-        const parsed = JSON.parse(stored);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        setCompletedFiles(parsed);
+        return JSON.parse(stored);
       } catch (e) {
         console.error("Failed to parse completed files from localStorage", e);
       }
     }
-    
-    // Check if this course is in favorites
+    return {};
+  });
+  
+  // Load favorites status using lazy initialization
+  const [isFavorite, setIsFavorite] = useState(() => {
+    if (typeof window === 'undefined') return false;
     const favoritesStored = localStorage.getItem('favoriteCourses');
     if (favoritesStored) {
       try {
         const favorites: FavoriteCourse[] = JSON.parse(favoritesStored);
-        setIsFavorite(favorites.some((fav: FavoriteCourse) => fav.code === courseCode));
+        return favorites.some((fav: FavoriteCourse) => fav.code === courseCode);
       } catch (e) {
         console.error("Failed to parse favorites from localStorage", e);
       }
     }
-    
+    return false;
+  });
+  
+  const mountedRef = useRef(false);
+  const tabsRef = useRef<HTMLDivElement>(null);
+
+  // Update mounted ref on mount
+  useEffect(() => {
     mountedRef.current = true;
-  }, [courseCode]);
+  }, []);
 
   // Save completed files to localStorage whenever it changes (skip initial mount)
   useEffect(() => {
@@ -421,7 +412,7 @@ export default function CourseResourcePage() {
         }>
           <div className="flex-1 w-full sm:w-auto">
             <button
-              onClick={() => window.location.href = window.location.pathname}
+              onClick={() => router.push('/')}
               className={
                 (isDark ? "text-[#7DB4E5] hover:text-[#9CC5E9]" : "text-[#145C9E] hover:text-[#1f3d78]") +
                 " text-[11px] sm:text-xs hover:underline mb-2 flex items-center gap-1 transition-all"
@@ -967,7 +958,7 @@ export default function CourseResourcePage() {
                 {t('courseNotInDatabase')}
               </p>
               <button
-                onClick={() => window.location.href = window.location.pathname}
+                onClick={() => router.push('/')}
                 className={
                   (isDark ? "bg-[#7DB4E5] text-slate-950 hover:bg-[#9CC5E9]" : "bg-[#145C9E] text-white hover:bg-[#1f3d78]") +
                   " rounded-md px-4 py-2 text-sm font-medium transition"

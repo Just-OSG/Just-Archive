@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "./context/AppContext";
 import { useTranslation } from "react-i18next";
-import CourseResourcePage from "./components/coursePage";
 import Navbar from "./components/Navbar";
 
 import { FACULTIES } from "./constants/faculties";
@@ -106,19 +105,10 @@ export default function HomePage() {
   const { lang, setLang, theme, setTheme, isRTL, isDark } = useApp();
   const { t } = useTranslation();
   const [selectedMajorCode, setSelectedMajorCode] = useState<string | null>(null); // null means "show all"
-  const [currentHash, setCurrentHash] = useState('');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   
   // Always start with default order to avoid hydration mismatch
   const [faculties, setFaculties] = useState<Faculty[]>(FACULTIES);
-  
-  // Monitor hash changes
-  useEffect(() => {
-    const updateHash = () => setCurrentHash(window.location.hash.slice(1));
-    updateHash();
-    window.addEventListener('hashchange', updateHash);
-    return () => window.removeEventListener('hashchange', updateHash);
-  }, []);
   
   // Load custom order from localStorage after mount
   useEffect(() => {
@@ -191,29 +181,6 @@ export default function HomePage() {
           majorCode, // Add major code to each course for reference
         }))
       );
-
-  // If we're on a course page (hash starts with "course/"), show the course page with mobile menu
-  if (currentHash.startsWith('course/')) {
-    return (
-      <div
-        className={
-          "min-h-screen " +
-          (isDark ? "bg-slate-900 text-slate-100" : "bg-slate-50 text-slate-900") +
-          (isRTL ? " rtl" : "")
-        }
-        dir={isRTL ? "rtl" : "ltr"}
-      >
-        <Navbar 
-          onToggleMobileMenu={() => setShowMobileMenu(!showMobileMenu)} 
-          showMobileMenu={showMobileMenu}
-          selectedMajorCode={selectedMajorCode}
-          setSelectedMajorCode={setSelectedMajorCode}
-        />
-        
-        <CourseResourcePage />
-      </div>
-    );
-  }
 
   return (
     <div
@@ -412,7 +379,7 @@ export default function HomePage() {
                 return (
                   <div
                     key={course.id}
-                    onClick={() => window.location.hash = `course/${course.code.replace(/\s+/g, '')}`}
+                    onClick={() => router.push(`/Course/${course.code.replace(/\s+/g, '')}`)}
                     className={
                       (isDark
                         ? "bg-slate-900/40 border-slate-700 hover:border-[#7DB4E5]/40 shadow-sm"

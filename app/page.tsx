@@ -2,10 +2,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useApp } from "./context/AppContext";
 import { useTranslation } from "react-i18next";
 import Navbar from "./components/Navbar";
+import SearchBar from "./components/SearchBar";
 
 import { FACULTIES } from "./constants/faculties";
 import { BrandColors, Faculty, Major, CourseWithCode } from "@/types";
@@ -102,13 +103,21 @@ const getCourseColor = (courseCode: string, isDark: boolean): string => {
 
 export default function HomePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { lang, setLang, theme, setTheme, isRTL, isDark } = useApp();
   const { t } = useTranslation();
   const [selectedMajorCode, setSelectedMajorCode] = useState<string | null>(null); // null means "show all"
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   
   // Always start with default order to avoid hydration mismatch
   const [faculties, setFaculties] = useState<Faculty[]>(FACULTIES);
+  
+  // Update search query from URL params
+  useEffect(() => {
+    const query = searchParams.get('query')?.toLowerCase() || "";
+    setSearchQuery(query);
+  }, [searchParams]);
   
   // Load custom order from localStorage after mount
   useEffect(() => {
@@ -173,7 +182,7 @@ export default function HomePage() {
   const selectedMajor = selectedMajorCode ? allMajors.find((m) => m.code === selectedMajorCode) : null;
   
   // Get courses: if no major selected, show all courses from all majors
-  const courses = selectedMajorCode 
+  const allCourses = selectedMajorCode 
     ? (COURSES_BY_MAJOR[selectedMajorCode] || [])
     : Object.entries(COURSES_BY_MAJOR).flatMap(([majorCode, coursesArray]) => 
         coursesArray.map(course => ({
@@ -181,6 +190,15 @@ export default function HomePage() {
           majorCode, // Add major code to each course for reference
         }))
       );
+  
+  // Filter courses based on search query
+  const courses = searchQuery
+    ? allCourses.filter(course =>
+        course.code.toLowerCase().includes(searchQuery) ||
+        course.nameEn.toLowerCase().includes(searchQuery) ||
+        course.nameAr.includes(searchQuery)
+      )
+    : allCourses;
 
   return (
     <div
@@ -358,18 +376,9 @@ export default function HomePage() {
               
               <div className="flex items-center gap-3 w-full sm:w-auto sm:flex-1">
                 {/* Search Bar */}
-                <input
-                  className={
-                    "flex-1 sm:flex-auto rounded-lg border px-3 sm:px-4 py-2 text-sm outline-none transition " +
-                    (isDark
-                      ? "border-slate-700 bg-slate-900/40 text-slate-100 placeholder:text-slate-500 focus:border-[#7DB4E5]"
-                      : "border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus:border-[#145C9E] focus:bg-white")
-                  }
-                  placeholder={t('searchPlaceholder')}
-                />
-
+                <SearchBar isDark={isDark} t={t} />
                 <p className={(isDark ? "text-slate-500" : "text-slate-400") + " text-sm whitespace-nowrap"}>
-                  {courses.length} {t('course')}
+                  {courses.length} {t('courses')}
                 </p>
               </div>
             </div>

@@ -114,3 +114,8 @@ export interface CourseWithCode {
   nameAr: string;
   majorCode?: string;
 }
+
+export interface SearchBarProps {
+    isDark: boolean;
+    t: (key: string) => string;
+}
